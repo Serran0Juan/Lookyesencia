@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel Look y Estilo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: mostrador — barra de pestañas fija arriba y una sola columna de trabajo; primero el resumen, después el detalle */
+:root{
+  --bg:#F4F2F6; --surface:#FFFFFF; --surface-2:#F8F7FA; --ink:#1D1A22; --ink-2:#57525F; --muted:#827C8A;
+  --line:#E3DFE8; --line-2:#CDC7D4;
+  --accent:#6E2F6B; --accent-ink:#FFFFFF; --accent-soft:#F2E7F1;
+  --good:#1D7520; --good-bg:#E4F2E4; --warn:#875700; --warn-bg:#FAEFD7; --crit:#B02F2F; --crit-bg:#FAE4E4;
+  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#eda100; --c-otro:#898781;
+  --grid:#E7E4EB; --axis:#C9C3CF;
+  --font-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --font-body:"Figtree","Segoe UI",system-ui,-apple-system,sans-serif;
+  --r:12px; --r-sm:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141216; --surface:#1D1A21; --surface-2:#232028; --ink:#F1EEF3; --ink-2:#C4BECB; --muted:#8E8895;
+    --line:#2F2B35; --line-2:#443F4B;
+    --accent:#D892D1; --accent-ink:#1D1A22; --accent-soft:#3A2639;
+    --good:#55C455; --good-bg:#17301A; --warn:#E5AB3D; --warn-bg:#392B10; --crit:#F27C7C; --crit-bg:#3E1B1B;
+    --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c-otro:#898781;
+    --grid:#2A2730; --axis:#3E3944;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141216; --surface:#1D1A21; --surface-2:#232028; --ink:#F1EEF3; --ink-2:#C4BECB; --muted:#8E8895;
+  --line:#2F2B35; --line-2:#443F4B;
+  --accent:#D892D1; --accent-ink:#1D1A22; --accent-soft:#3A2639;
+  --good:#55C455; --good-bg:#17301A; --warn:#E5AB3D; --warn-bg:#392B10; --crit:#F27C7C; --crit-bg:#3E1B1B;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c-otro:#898781;
+  --grid:#2A2730; --axis:#3E3944;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1100px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+
+/* Header */
+.top{padding-block:20px 6px}
+.top .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand h1{font-family:var(--font-display);font-weight:700;font-size:clamp(24px,4vw,32px);line-height:1.05;margin:0;letter-spacing:-.01em;text-wrap:balance}
+.brand p{margin:4px 0 0;color:var(--ink-2);font-size:14px}
+.sync{font-size:13px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.sync i{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block}
+.sync[data-s="ok"] i{background:var(--good)}
+.sync[data-s="busy"] i{background:var(--warn)}
+.sync[data-s="err"] i{background:var(--crit)}
+
+/* Tabs */
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.tabs .wrap{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding-block:8px}
+.tabs .wrap::-webkit-scrollbar{display:none}
+.tab{border:0;background:transparent;padding:9px 14px;border-radius:999px;font-weight:600;font-size:14.5px;color:var(--ink-2);cursor:pointer;white-space:nowrap}
+.tab:hover{background:var(--surface)}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.tab:focus-visible,.btn:focus-visible,.chip:focus-visible,.pick:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+main{padding-block:18px 64px}
+section[data-panel]{display:flex;flex-direction:column;gap:18px}
+h2{font-family:var(--font-display);font-weight:600;font-size:19px;margin:0;letter-spacing:-.005em}
+h3{font-size:13px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:0;font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:16px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.between{justify-content:space-between}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.notice{border-radius:var(--r);padding:14px 16px;background:var(--accent-soft);color:var(--ink);font-size:14px}
+.notice.crit{background:var(--crit-bg)}
+
+/* KPI tiles */
+.kpis{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+@media (max-width:820px){.kpis{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.kpi{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.kpi .label{font-size:13px;color:var(--ink-2);font-weight:500}
+.kpi .value{font-family:var(--font-display);font-weight:600;font-size:clamp(20px,3.2vw,27px);line-height:1.15;overflow-wrap:anywhere}
+.kpi .sub{font-size:12.5px;color:var(--muted)}
+.kpi.hero{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.kpi.hero .label,.kpi.hero .sub{color:inherit;opacity:.75}
+
+.grid2{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:18px}
+@media (max-width:820px){.grid2{grid-template-columns:minmax(0,1fr)}}
+
+/* Recupero bar */
+.bar{height:12px;border-radius:999px;background:var(--surface-2);border:1px solid var(--line);overflow:hidden}
+.bar > span{display:block;height:100%;background:var(--accent);border-radius:999px;min-width:0;transition:width .4s ease}
+@media (prefers-reduced-motion:reduce){.bar > span{transition:none}}
+
+/* Chips & segmented */
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:5px 11px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;gap:6px}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+
+/* Pills */
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--good-bg);color:var(--good)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.crit{background:var(--crit-bg);color:var(--crit)}
+.pill.neutral{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+
+/* Buttons & inputs */
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:var(--r-sm);padding:9px 14px;font-weight:600;font-size:14px;cursor:pointer}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.primary:hover{filter:brightness(1.07)}
+.btn.danger{color:var(--crit);border-color:var(--crit)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn[disabled]{opacity:.5;cursor:not-allowed}
+.btn.big{padding:13px 18px;font-size:15.5px;width:100%}
+label.f{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink-2);font-weight:500;min-width:0}
+input[type=text],input[type=number],input[type=date],input[type=search],select{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:8px 10px;font-size:15px;min-width:0;width:100%}
+input[type=number]{font-variant-numeric:tabular-nums}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px}
+
+/* Tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r);background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:9px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;background:var(--surface-2);white-space:nowrap}
+td.r,th.r{text-align:right}
+tbody tr:last-child td{border-bottom:0}
+tfoot td{font-weight:700;background:var(--surface-2);border-top:1px solid var(--line-2);border-bottom:0}
+td input[type=number]{width:86px;padding:5px 7px;font-size:14px}
+.pname{font-weight:600}
+.pcode{font-size:11.5px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Inline category bars */
+.cbar{height:8px;border-radius:4px;display:block}
+.cbar-track{width:100%;min-width:60px}
+
+/* Chart */
+.chart{position:relative;width:100%;min-height:190px}
+.chart svg{display:block;width:100%;height:auto;overflow:visible}
+.chart text{fill:var(--muted);font-size:11px;font-family:var(--font-body);font-variant-numeric:tabular-nums}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:var(--bg);border-radius:8px;padding:7px 10px;font-size:12.5px;line-height:1.35;white-space:nowrap;transform:translate(-50%,-100%);z-index:3}
+.tip b{font-size:13.5px}
+.empty{padding:26px 16px;text-align:center;color:var(--ink-2);font-size:14px;border:1px dashed var(--line-2);border-radius:var(--r);background:var(--surface-2)}
+
+/* Vender */
+.sell{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.sell{grid-template-columns:minmax(0,1fr)}}
+.picks{display:flex;flex-direction:column;gap:6px;max-height:560px;overflow:auto;padding-right:2px}
+.pick{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:10px;border:1px solid var(--line);background:var(--surface);border-radius:var(--r-sm);padding:10px 12px;text-align:left;cursor:pointer;width:100%}
+.pick:hover{border-color:var(--accent)}
+.pick .nm{font-weight:600;overflow-wrap:anywhere}
+.pick .pr{font-weight:700;font-variant-numeric:tabular-nums}
+.pick.out{opacity:.65}
+.cart{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);display:flex;flex-direction:column;gap:12px}
+.citem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;padding-block:10px;border-bottom:1px solid var(--line)}
+.citem:last-of-type{border-bottom:0}
+.citem .ctrl{display:flex;gap:8px;align-items:center;grid-column:1 / -1;flex-wrap:wrap}
+.step{display:inline-flex;align-items:center;border:1px solid var(--line-2);border-radius:var(--r-sm);overflow:hidden}
+.step button{border:0;background:var(--surface-2);width:32px;height:32px;cursor:pointer;font-weight:700;font-size:16px}
+.step input{width:44px;border:0;border-radius:0;text-align:center;padding:5px 2px}
+.price-in{display:inline-flex;align-items:center;gap:4px}
+.price-in input{width:100px;padding:5px 7px}
+.totals{display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px}
+.totals .t{font-family:var(--font-display);font-size:24px;font-weight:600}
+
+/* Ventas list */
+.day{display:flex;flex-direction:column;gap:8px}
+.day h3{display:flex;justify-content:space-between;gap:10px}
+.sale{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;align-items:start}
+.sale .its{font-size:13.5px;color:var(--ink-2)}
+.sale .amt{text-align:right;font-variant-numeric:tabular-nums}
+.sale .amt b{font-size:16px}
+.sale .acts{grid-column:1 / -1;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+/* Toast */
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:50;max-width:calc(100% - 32px);box-shadow:0 6px 24px rgba(0,0,0,.18)}
+.toast.crit{background:var(--crit);color:#fff}
+details.add summary{cursor:pointer;font-weight:600;list-style:none;display:flex;align-items:center;gap:8px}
+details.add summary::-webkit-details-marker{display:none}
+details.add summary::before{content:"+";display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-weight:700}
+details.add[open] summary::before{content:"–"}
+.ro .needs-write{display:none!important}
+.sync a{color:inherit}
+
+/* Acceso */
+.gate{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.gate form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px}
+.gate h1{font-family:var(--font-display);font-weight:700;font-size:30px;margin:0;letter-spacing:-.01em}
+.gate p{margin:0;color:var(--ink-2);font-size:14.5px}
+.gate .err{color:var(--crit);font-weight:600;font-size:14px;min-height:1.4em}
+</style>
+</head>
+<body>
+<div class="gate" id="gate" hidden>
+  <form id="gateForm" autocomplete="on">
+    <div><h1>Look y Estilo</h1><p id="gateText">Ingresá la clave del panel.</p></div>
+    <label class="f">Clave<input type="password" id="gateClave" autocomplete="current-password" required minlength="6"></label>
+    <label class="f" id="gateRepWrap" hidden>Repetí la clave<input type="password" id="gateRep" autocomplete="new-password"></label>
+    <div class="err" id="gateErr" role="alert"></div>
+    <button class="btn primary big" type="submit" id="gateBtn">Entrar</button>
+  </form>
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Look y Estilo</h1>
+      <p>Perfumes · stock, márgenes y ventas</p>
+    </div>
+    <div class="row" style="gap:14px">
+      <div class="sync" id="sync" data-s="idle"><i></i><span id="syncText">Conectando…</span></div>
+      <a class="small" id="sheetLink" href="#" target="_blank" rel="noopener" hidden style="color:var(--ink-2)">Abrir planilla</a>
+      <button class="btn ghost small" type="button" id="salir" style="padding:4px 6px;color:var(--ink-2)">Salir</button>
+    </div>
+  </div>
+</header>
+
+<nav class="tabs" aria-label="Secciones">
+  <div class="wrap" role="tablist">
+    <button class="tab" role="tab" data-tab="resumen" aria-selected="true">Resumen</button>
+    <button class="tab" role="tab" data-tab="vender" aria-selected="false">Vender</button>
+    <button class="tab" role="tab" data-tab="stock" aria-selected="false">Stock y precios</button>
+    <button class="tab" role="tab" data-tab="ventas" aria-selected="false">Ventas</button>
+    <button class="tab" role="tab" data-tab="gastos" aria-selected="false">Gastos</button>
+  </div>
+</nav>
+
+<main class="wrap" id="app">
+  <div id="globalNotice"></div>
+
+  <!-- RESUMEN -->
+  <section data-panel="resumen">
+    <div class="row between">
+      <h2>¿Cómo va el negocio?</h2>
+      <div class="chips" id="perResumen"></div>
+    </div>
+    <div class="kpis" id="kpis"></div>
+    <div class="grid2">
+      <div class="card" style="display:flex;flex-direction:column;gap:12px;min-width:0">
+        <div class="row between"><h3>Ventas por día · últimos 14 días</h3><span class="small muted" id="chartNote"></span></div>
+        <div class="chart" id="chart"></div>
+      </div>
+      <div class="card" style="display:flex;flex-direction:column;gap:12px;min-width:0" id="recupero"></div>
+    </div>
+    <div class="grid2">
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+        <h3>Por categoría</h3>
+        <div class="tbl-wrap" id="catTable"></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+        <h3>Para revisar</h3>
+        <div id="alerts" style="display:flex;flex-direction:column;gap:8px"></div>
+        <h3 style="margin-top:8px">Más vendidos</h3>
+        <div id="top" style="display:flex;flex-direction:column;gap:6px"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- VENDER -->
+  <section data-panel="vender" hidden>
+    <div class="sell">
+      <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
+        <h2>Elegí los productos</h2>
+        <input type="search" id="venderQ" placeholder="Buscar perfume (ej: yara, 9pm, body)" autocomplete="off">
+        <div class="chips" id="venderCats"></div>
+        <div class="picks" id="picks"></div>
+      </div>
+      <div class="card cart" id="cartCard"></div>
+    </div>
+  </section>
+
+  <!-- STOCK -->
+  <section data-panel="stock" hidden>
+    <div class="card" style="display:flex;flex-direction:column;gap:12px">
+      <div class="row between">
+        <h2>Precios sugeridos</h2>
+        <span class="small muted">El precio sugerido = costo real × (1 + markup), redondeado hacia arriba.</span>
+      </div>
+      <div class="fields">
+        <label class="f">Markup objetivo (%)<input type="number" id="cfgMarkup" min="0" step="5" inputmode="decimal"></label>
+        <label class="f">Redondear a múltiplos de ($)<input type="number" id="cfgRedondeo" min="1" step="50" inputmode="numeric"></label>
+      </div>
+      <p class="small muted" style="margin:0">Si cargás <b>Tu precio</b> en un producto, ese manda sobre el sugerido. Dejalo vacío para usar el sugerido.</p>
+    </div>
+
+    <div class="row between">
+      <div class="chips" id="stockCats"></div>
+      <div class="row">
+        <input type="search" id="stockQ" placeholder="Buscar producto" style="width:200px" autocomplete="off">
+        <button class="chip" id="soloBajo" aria-pressed="false">Solo stock bajo</button>
+      </div>
+    </div>
+    <div class="row between needs-write" id="recibirRow"></div>
+    <div class="tbl-wrap" id="stockTable"></div>
+
+    <details class="add card needs-write" id="addProd">
+      <summary>Agregar producto (otra compra, ropa, etc.)</summary>
+      <form id="addForm" style="display:flex;flex-direction:column;gap:12px;margin-top:14px">
+        <div class="fields">
+          <label class="f">Nombre<input type="text" id="apNombre" required placeholder="Ej: Remera oversize negra"></label>
+          <label class="f">Categoría<input type="text" id="apCat" list="catList" required placeholder="Ej: Ropa"></label>
+          <label class="f">Código (opcional)<input type="text" id="apCodigo"></label>
+          <label class="f">Costo por unidad ($)<input type="number" id="apCosto" min="0" step="1" required inputmode="decimal"></label>
+          <label class="f">Cantidad<input type="number" id="apCant" min="1" step="1" value="1" required inputmode="numeric"></label>
+          <label class="f">Tu precio de venta (opcional)<input type="number" id="apPrecio" min="0" step="1" inputmode="decimal"></label>
+        </div>
+        <datalist id="catList"></datalist>
+        <label class="row small" style="gap:8px"><input type="checkbox" id="apRecibido" checked> Ya lo tengo en mano (si no, queda como “por llegar”)</label>
+        <div><button class="btn primary" type="submit">Agregar al stock</button></div>
+      </form>
+    </details>
+  </section>
+
+  <!-- VENTAS -->
+  <section data-panel="ventas" hidden>
+    <div class="row between">
+      <h2>Historial de ventas</h2>
+      <div class="chips" id="perVentas"></div>
+    </div>
+    <div class="kpis" id="ventasKpis"></div>
+    <div id="ventasList" style="display:flex;flex-direction:column;gap:18px"></div>
+  </section>
+
+  <!-- GASTOS -->
+  <section data-panel="gastos" hidden>
+    <h2>Gastos del negocio</h2>
+    <p class="small muted" style="margin:-8px 0 0">Envíos, packaging, bolsitas, publicidad, comisiones de Mercado Pago… Se restan de la ganancia neta.</p>
+    <form class="card needs-write" id="gastoForm" style="display:flex;flex-direction:column;gap:12px">
+      <div class="fields">
+        <label class="f">Fecha<input type="date" id="gFecha" required></label>
+        <label class="f">Concepto<input type="text" id="gConcepto" list="gastoSug" required placeholder="Ej: Envío del pedido"></label>
+        <label class="f">Monto ($)<input type="number" id="gMonto" min="0" step="1" required inputmode="decimal"></label>
+      </div>
+      <datalist id="gastoSug"><option value="Envío"><option value="Packaging"><option value="Bolsas y etiquetas"><option value="Publicidad"><option value="Comisión Mercado Pago"><option value="Transporte"></datalist>
+      <div><button class="btn primary" type="submit">Registrar gasto</button></div>
+    </form>
+    <div class="tbl-wrap" id="gastosTable"></div>
+  </section>
+</main>
+<div id="toastHost"></div>
+
+<script>
+(function(){
+"use strict";
+// URL de la aplicación web del Apps Script de la planilla (termina en /exec)
+const API_URL = "";
+const $ =(s, el=document) => el.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const ars = n => (n < 0 ? "-$" : "$") + Math.round(Math.abs(+n || 0)).toLocaleString("es-AR");
+const arsShort = n => n >= 1000 ? "$" + (n/1000).toLocaleString("es-AR",{maximumFractionDigits:1}) + "k" : "$" + Math.round(n);
+const pct = x => isFinite(x) ? (x*100).toLocaleString("es-AR",{minimumFractionDigits:0,maximumFractionDigits:1}) + "%" : "–";
+const int = n => Math.round(+n||0).toLocaleString("es-AR");
+const pad = n => String(n).padStart(2,"0");
+const iso = d => d.getFullYear() + "-" + pad(d.getMonth()+1) + "-" + pad(d.getDate());
+const hoy = () => iso(new Date());
+const parseISO = s => { const [y,m,d] = String(s).split("-").map(Number); return new Date(y, (m||1)-1, d||1); };
+const MESES = ["ene","feb","mar","abr","may","jun","jul","ago","sep","oct","nov","dic"];
+const DIAS = ["domingo","lunes","martes","miércoles","jueves","viernes","sábado"];
+const fechaLarga = s => { const d = parseISO(s); return DIAS[d.getDay()] + " " + d.getDate() + " de " + MESES[d.getMonth()]; };
+const fechaCorta = s => { const d = parseISO(s); return d.getDate() + " " + MESES[d.getMonth()]; };
+
+const CAT_ORDER = ["Tubito 35ml","Mini 30ml","Perfume","Body splash 250ml"];
+const catColor = c => { const i = CAT_ORDER.indexOf(c); return i >= 0 ? "var(--c" + (i+1) + ")" : "var(--c-otro)"; };
+const MEDIOS = ["Efectivo","Transferencia","Mercado Pago","Tarjeta"];
+const PERIODOS = [["hoy","Hoy"],["7","7 días"],["30","30 días"],["mes","Este mes"],["todo","Todo"]];
+
+const store = (() => { try { return window.localStorage; } catch(e){ return null; } })();
+const remember = (k, v) => { try { store && store.setItem("lye:" + k, v); } catch(e){} };
+const recall = (k, d) => { try { const v = store && store.getItem("lye:" + k); return v == null ? d : v; } catch(e){ return d; } };
+
+const S = {
+  clave: recall("clave",""), canWrite:true,
+  productos:[], ventas:[], gastos:[], config:{markup:1, redondeo:100},
+  loaded:{p:false, v:false, g:false},
+  tab: recall("tab","resumen"),
+  perResumen: recall("perResumen","todo"), perVentas: recall("perVentas","30"),
+  venderQ:"", venderCat:"Todas", stockQ:"", stockCat:"Todas", soloBajo:false,
+  cart:[], cartMeta:{fecha:hoy(), medio:"Efectivo", cliente:"", nota:""},
+  confirm:null
+};
+
+/* ---------- utilidades de UI ---------- */
+let toastTimer;
+function toast(msg, kind){
+  const h = $("#toastHost"); h.innerHTML = "";
+  const t = document.createElement("div"); t.className = "toast" + (kind === "crit" ? " crit" : ""); t.textContent = msg; t.setAttribute("role","status");
+  h.appendChild(t); clearTimeout(toastTimer); toastTimer = setTimeout(() => { h.innerHTML = ""; }, 2800);
+}
+function setSync(state, text){ const s = $("#sync"); s.dataset.s = state; $("#syncText").textContent = text; }
+
+function chipsHTML(list, active, attr){
+  return list.map(([v,l,color]) => `<button class="chip" type="button" ${attr}="${esc(v)}" aria-pressed="${v===active}">${color?`<span class="dot" style="background:${color}"></span>`:""}${esc(l)}</button>`).join("");
+}
+function periodStart(p){
+  const d = new Date();
+  if (p === "hoy") return hoy();
+  if (p === "7"){ d.setDate(d.getDate()-6); return iso(d); }
+  if (p === "30"){ d.setDate(d.getDate()-29); return iso(d); }
+  if (p === "mes") return d.getFullYear() + "-" + pad(d.getMonth()+1) + "-01";
+  return "0000-00-00";
+}
+const inPeriod = (fecha, p) => String(fecha||"") >= periodStart(p);
+
+/* Re-render sin pisar lo que la persona está escribiendo */
+function safeRender(el, fn){
+  const a = document.activeElement;
+  if (a && el.contains(a) && a.matches("input,select,textarea")) { el.dataset.dirty = "1"; return; }
+  el.dataset.dirty = ""; fn();
+}
+function onFocusOut(el, fn){
+  el.addEventListener("focusout", () => setTimeout(() => { if (el.dataset.dirty === "1" && !el.contains(document.activeElement)) { el.dataset.dirty = ""; fn(); } }, 0));
+}
+
+/* ---------- cálculos ---------- */
+function calc(){
+  const vend = new Map();
+  for (const v of S.ventas) for (const it of (v.items||[])) vend.set(it.pid, (vend.get(it.pid)||0) + (+it.cant||0));
+  const m = +S.config.markup || 0, r = Math.max(1, +S.config.redondeo || 1);
+  const rows = S.productos.map(p => {
+    const costo = +p.costo || 0;
+    const sugerido = Math.ceil(+(costo*(1+m)/r).toFixed(6)) * r;
+    const propio = p.precioVenta != null && p.precioVenta !== "" && isFinite(+p.precioVenta);
+    const precio = propio ? +p.precioVenta : sugerido;
+    const pendiente = p.recibido == null;
+    const base = pendiente ? (+p.pedido||0) : (+p.recibido||0);
+    const vendidos = vend.get(p.id) || 0;
+    const stock = base - vendidos;
+    const gan = precio - costo;
+    return {...p, costo, sugerido, precio, propio, pendiente, base, vendidos, stock, gan, margen: precio > 0 ? gan/precio : 0};
+  });
+  return {rows, byId: new Map(rows.map(r => [r.id, r]))};
+}
+function stockPill(r){
+  if (r.stock <= 0) return `<span class="pill crit">Agotado</span>`;
+  if (r.stock === 1) return `<span class="pill warn">Queda 1</span>`;
+  if (r.pendiente) return `<span class="pill neutral">Por llegar</span>`;
+  return `<span class="pill ok">En stock</span>`;
+}
+function categorias(rows){
+  const seen = []; for (const c of CAT_ORDER) if (rows.some(r => r.categoria === c)) seen.push(c);
+  for (const r of rows) if (!seen.includes(r.categoria)) seen.push(r.categoria);
+  return seen;
+}
+
+/* ---------- conexión con la planilla (Apps Script) ---------- */
+async function api(accion, extra){
+  if (!API_URL) throw {error:"sin_api"};
+  let res, j;
+  try {
+    res = await fetch(API_URL, {method:"POST", headers:{"Content-Type":"text/plain;charset=utf-8"},
+      body: JSON.stringify(Object.assign({accion, clave:S.clave}, extra || {}))});
+    j = await res.json();
+  } catch(e){ throw {error:"red"}; }
+  if (!j || j.error) throw (j || {error:"red"});
+  return j.data;
+}
+function aplicar(d){
+  if (!d) return;
+  S.productos = (d.productos || []).map(p => ({...p, id: p.nombre})).sort((a,b) => (+a.orden||0) - (+b.orden||0));
+  S.ventas = (d.ventas || []).sort((a,b) => String(b.fecha).localeCompare(String(a.fecha)) || (+b.creado||0) - (+a.creado||0));
+  S.gastos = (d.gastos || []).sort((a,b) => String(b.fecha).localeCompare(String(a.fecha)) || (+b.creado||0) - (+a.creado||0));
+  S.config = {markup: 1, redondeo: 100, ...(d.config || {})};
+  S.loaded = {p:true, v:true, g:true};
+  if (d.planilla){ const a = $("#sheetLink"); a.href = d.planilla; a.hidden = false; }
+  renderAll();
+}
+function manejarError(e, accion){
+  const c = e && e.error;
+  setSync("err", accion === "estado" ? "Sin conexión" : "No se guardó");
+  if (c === "clave"){ const habia = !!S.clave; olvidarClave(); mostrarGate(habia ? "La clave cambió o no es correcta. Ingresala de nuevo." : ""); }
+  else if (c === "sin_clave") mostrarGate("", true);
+  else if (c === "bloqueado") toast("Demasiados intentos con clave incorrecta. Esperá 10 minutos.", "crit");
+  else if (c === "red") toast("No hay conexión con la planilla. Revisá internet y probá de nuevo.", "crit");
+  else if (c === "servidor") toast("La planilla respondió: " + (e.detalle || "error"), "crit");
+  else if (c === "sin_api") toast("Falta conectar la planilla al panel.", "crit");
+  else toast("No se pudo guardar. Probá de nuevo.", "crit");
+}
+let ocupado = 0;
+async function write(accion, extra, okMsg){
+  ocupado++; setSync("busy","Guardando…");
+  try { aplicar(await api(accion, extra)); setSync("ok","Guardado en la planilla"); if (okMsg) toast(okMsg); return true; }
+  catch(e){ manejarError(e, accion); return false; }
+  finally { ocupado--; }
+}
+async function cargar(silencioso){
+  if (ocupado) return;
+  if (!silencioso) setSync("busy","Cargando…");
+  try { aplicar(await api("estado")); setSync("ok","Conectado a la planilla"); $("#gate").hidden = true; }
+  catch(e){ if (!silencioso || e.error === "clave") manejarError(e, "estado"); }
+}
+
+/* ---------- acceso con clave ---------- */
+let creando = false;
+function olvidarClave(){ S.clave = ""; try { store && store.removeItem("lye:clave"); } catch(e){} }
+function mostrarGate(msg, crear){
+  creando = !!crear;
+  $("#gate").hidden = false;
+  $("#gateText").textContent = crear ? "Primera vez: creá la clave del panel. Vas a usarla en cada dispositivo donde lo abras." : "Ingresá la clave del panel.";
+  $("#gateRepWrap").hidden = !crear;
+  $("#gateRep").required = !!crear;
+  $("#gateClave").autocomplete = crear ? "new-password" : "current-password";
+  $("#gateBtn").textContent = crear ? "Crear clave y entrar" : "Entrar";
+  $("#gateErr").textContent = msg || "";
+  setTimeout(() => $("#gateClave").focus(), 30);
+}
+$("#gateForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const clave = $("#gateClave").value;
+  if (clave.length < 6){ $("#gateErr").textContent = "La clave tiene que tener al menos 6 caracteres."; return; }
+  if (creando && clave !== $("#gateRep").value){ $("#gateErr").textContent = "Las dos claves no coinciden."; return; }
+  $("#gateBtn").disabled = true; $("#gateErr").textContent = "";
+  S.clave = clave;
+  try {
+    aplicar(await api(creando ? "crearClave" : "estado"));
+    remember("clave", clave); $("#gate").hidden = true; $("#gateClave").value = ""; $("#gateRep").value = "";
+    setSync("ok","Conectado a la planilla"); toast(creando ? "Clave creada" : "Listo");
+  } catch(err){
+    const c = err && err.error;
+    if (c === "clave"){ S.clave = ""; $("#gateErr").textContent = "La clave no es correcta."; }
+    else if (c === "sin_clave"){ S.clave = ""; mostrarGate("", true); }
+    else if (c === "bloqueado") $("#gateErr").textContent = "Demasiados intentos. Esperá 10 minutos.";
+    else $("#gateErr").textContent = "No pude conectar con la planilla. Revisá internet.";
+  } finally { $("#gateBtn").disabled = false; }
+});
+function applyRO(){
+  document.body.classList.toggle("ro", !S.canWrite);
+  if (!S.canWrite) $("#globalNotice").innerHTML = `<div class="notice">Estás viendo el panel en modo lectura: podés mirar todo, pero no registrar ventas ni cambiar precios.</div>`;
+}
+
+/* ---------- RESUMEN ---------- */
+function renderResumen(C){
+  $("#perResumen").innerHTML = chipsHTML(PERIODOS, S.perResumen, "data-per");
+  const P = S.perResumen;
+  const ventas = S.ventas.filter(v => inPeriod(v.fecha, P));
+  const gastos = S.gastos.filter(g => inPeriod(g.fecha, P));
+  const ingresos = ventas.reduce((a,v) => a + (+v.total||0), 0);
+  const costoV = ventas.reduce((a,v) => a + (+v.costo||0), 0);
+  const unidades = ventas.reduce((a,v) => a + (v.items||[]).reduce((b,i) => b + (+i.cant||0), 0), 0);
+  const gTotal = gastos.reduce((a,g) => a + (+g.monto||0), 0);
+  const bruta = ingresos - costoV, neta = bruta - gTotal;
+  const stockU = C.rows.reduce((a,r) => a + Math.max(0, r.stock), 0);
+  const perLabel = PERIODOS.find(p => p[0] === P)[1].toLowerCase();
+
+  $("#kpis").innerHTML = `
+    <div class="kpi hero"><span class="label">Vendiste</span><span class="value num">${ars(ingresos)}</span><span class="sub">${int(ventas.length)} ventas · ${int(unidades)} unidades · ${esc(perLabel)}</span></div>
+    <div class="kpi"><span class="label">Ganancia bruta</span><span class="value num">${ars(bruta)}</span><span class="sub">Margen ${ingresos > 0 ? pct(bruta/ingresos) : "–"} sobre lo vendido</span></div>
+    <div class="kpi"><span class="label">Gastos</span><span class="value num">${ars(gTotal)}</span><span class="sub">${int(gastos.length)} registrados</span></div>
+    <div class="kpi"><span class="label">Ganancia neta</span><span class="value num" style="color:${neta < 0 ? "var(--crit)" : "inherit"}">${ars(neta)}</span><span class="sub">Ganancia bruta menos gastos</span></div>`;
+
+  // Recupero (desde el inicio)
+  const invertido = C.rows.reduce((a,r) => a + r.costo*(+r.pedido||0), 0);
+  const gastosTot = S.gastos.reduce((a,g) => a + (+g.monto||0), 0);
+  const ingresosTot = S.ventas.reduce((a,v) => a + (+v.total||0), 0);
+  const aRecuperar = invertido + gastosTot;
+  const frac = aRecuperar > 0 ? Math.min(1, ingresosTot/aRecuperar) : 0;
+  const falta = Math.max(0, aRecuperar - ingresosTot);
+  const valorCosto = C.rows.reduce((a,r) => a + Math.max(0,r.stock)*r.costo, 0);
+  const valorVenta = C.rows.reduce((a,r) => a + Math.max(0,r.stock)*r.precio, 0);
+  const pend = C.rows.filter(r => r.pendiente).length;
+  $("#recupero").innerHTML = `
+    <h3>Recupero de la inversión · desde el inicio</h3>
+    <div class="row between"><span class="kpi" style="border:0;padding:0;background:none"><span class="value num">${pct(frac)}</span></span><span class="small muted num" style="text-align:right">${ars(ingresosTot)} de ${ars(aRecuperar)}</span></div>
+    <div class="bar" role="img" aria-label="Recuperado ${pct(frac)}"><span style="width:${(frac*100).toFixed(1)}%"></span></div>
+    <p class="small" style="margin:0;color:var(--ink-2)">${falta > 0 ? `Te faltan <b class="num">${ars(falta)}</b> en ventas para recuperar lo que pusiste en mercadería (${ars(invertido)}) y gastos (${ars(gastosTot)}).` : aRecuperar === 0 ? `Cuando haya productos cargados, acá vas a ver cuánto llevás recuperado de lo invertido.` : `<b>Ya recuperaste toda la inversión.</b> Desde acá, lo que vendas es ganancia.`}</p>
+    <div style="border-top:1px solid var(--line);padding-top:10px;display:grid;grid-template-columns:1fr auto;gap:4px 10px;font-size:14px">
+      <span class="muted">Unidades en stock</span><b class="num">${int(stockU)}</b>
+      <span class="muted">Valor del stock a costo</span><b class="num">${ars(valorCosto)}</b>
+      <span class="muted">Si vendés todo a tus precios</span><b class="num">${ars(valorVenta)}</b>
+      <span class="muted">Productos por llegar</span><b class="num">${int(pend)}</b>
+    </div>`;
+
+  // Por categoría
+  const cats = categorias(C.rows);
+  const agg = new Map(cats.map(c => [c, {u:0, ing:0, cos:0, stock:0}]));
+  for (const r of C.rows){ const a = agg.get(r.categoria); if (a) a.stock += Math.max(0, r.stock); }
+  for (const v of ventas) for (const it of (v.items||[])){
+    const cat = it.categoria || (C.byId.get(it.pid)||{}).categoria || "Otro";
+    if (!agg.has(cat)) agg.set(cat, {u:0, ing:0, cos:0, stock:0});
+    const a = agg.get(cat); a.u += +it.cant||0; a.ing += (+it.precio||0)*(+it.cant||0); a.cos += (+it.costo||0)*(+it.cant||0);
+  }
+  const maxIng = Math.max(1, ...[...agg.values()].map(a => a.ing));
+  let tU=0,tI=0,tG=0,tS=0;
+  const body = [...agg.entries()].map(([c,a]) => { tU+=a.u; tI+=a.ing; tG+=a.ing-a.cos; tS+=a.stock;
+    return `<tr><td><span class="row" style="gap:7px;flex-wrap:nowrap"><span class="dot" style="background:${catColor(c)}"></span>${esc(c)}</span></td>
+      <td class="r num">${int(a.u)}</td><td class="r num">${int(a.stock)}</td>
+      <td class="cbar-track"><span class="cbar" style="width:${a.ing > 0 ? Math.max(3, a.ing/maxIng*100) : 0}%;background:${catColor(c)}"></span></td>
+      <td class="r num">${ars(a.ing)}</td><td class="r num">${ars(a.ing - a.cos)}</td></tr>`; }).join("");
+  $("#catTable").innerHTML = `<table><thead><tr><th>Categoría</th><th class="r">Vendidas</th><th class="r">Stock</th><th></th><th class="r">Ingresos</th><th class="r">Ganancia</th></tr></thead>
+    <tbody>${body}</tbody><tfoot><tr><td>Total</td><td class="r num">${int(tU)}</td><td class="r num">${int(tS)}</td><td></td><td class="r num">${ars(tI)}</td><td class="r num">${ars(tG)}</td></tr></tfoot></table>`;
+
+  // Alertas
+  const bajos = C.rows.filter(r => r.stock <= 1).sort((a,b) => a.stock - b.stock);
+  const sinPrecio = C.rows.filter(r => !r.propio).length;
+  const al = [];
+  if (pend) al.push(`<div class="notice">Tenés <b>${pend}</b> productos por llegar. Cuando llegue el pedido, cargá lo recibido en <a href="#stock" data-go="stock">Stock y precios</a>.</div>`);
+  if (sinPrecio) al.push(`<div class="notice">${sinPrecio} productos usan el precio sugerido (markup ${pct(+S.config.markup||0)}). Podés poner tu precio en <a href="#stock" data-go="stock">Stock y precios</a>.</div>`);
+  if (bajos.length) al.push(`<div class="card" style="padding:10px 12px;display:flex;flex-direction:column;gap:6px">${bajos.slice(0,8).map(r => `<div class="row between" style="gap:8px"><span class="row" style="gap:7px"><span class="dot" style="background:${catColor(r.categoria)}"></span>${esc(r.nombre)}</span>${stockPill(r)}</div>`).join("")}${bajos.length > 8 ? `<span class="small muted">y ${bajos.length-8} más</span>` : ""}</div>`);
+  if (!al.length) al.push(`<div class="empty">Nada para revisar: todo con stock y precio.</div>`);
+  $("#alerts").innerHTML = al.join("");
+
+  // Top
+  const topMap = new Map();
+  for (const v of ventas) for (const it of (v.items||[])){ const t = topMap.get(it.pid) || {nombre:it.nombre, cat:it.categoria, u:0, ing:0}; t.u += +it.cant||0; t.ing += (+it.precio||0)*(+it.cant||0); topMap.set(it.pid, t); }
+  const top = [...topMap.values()].sort((a,b) => b.u - a.u || b.ing - a.ing).slice(0,5);
+  $("#top").innerHTML = top.length ? top.map(t => `<div class="row between" style="gap:8px;padding:6px 0;border-bottom:1px solid var(--line)"><span class="row" style="gap:7px;min-width:0"><span class="dot" style="background:${catColor(t.cat)}"></span><span style="overflow-wrap:anywhere">${esc(t.nombre)}</span></span><span class="num small"><b>${int(t.u)}</b> u · ${ars(t.ing)}</span></div>`).join("")
+    : `<div class="empty">Cuando registres ventas, acá vas a ver qué sale más.</div>`;
+
+  drawChart();
+}
+
+/* ---------- gráfico ---------- */
+function niceStep(x){ const p = Math.pow(10, Math.floor(Math.log10(x))); for (const m of [1,2,2.5,5,10]) if (m*p >= x) return m*p; return 10*p; }
+function drawChart(){
+  const box = $("#chart"); if (!box) return;
+  const days = []; const base = parseISO(hoy());
+  for (let i = 13; i >= 0; i--){ const d = new Date(base); d.setDate(d.getDate()-i); days.push(iso(d)); }
+  const by = new Map(days.map(d => [d, {total:0, n:0, gan:0}]));
+  for (const v of S.ventas){ const e = by.get(v.fecha); if (e){ e.total += +v.total||0; e.n++; e.gan += (+v.total||0) - (+v.costo||0); } }
+  const vals = days.map(d => by.get(d));
+  const sum14 = vals.reduce((a,e) => a + e.total, 0);
+  $("#chartNote").textContent = sum14 > 0 ? "Total: " + ars(sum14) : "";
+  const max = Math.max(...vals.map(e => e.total));
+  if (max <= 0){ box.innerHTML = `<div class="empty" style="margin-top:6px">Todavía no hay ventas en estos 14 días. Registrá la primera en <a href="#vender" data-go="vender">Vender</a>.</div>`; return; }
+  const W = Math.max(280, Math.round(box.clientWidth || 560)), H = 190, L = 46, R = 6, T = 12, B = 24;
+  const step = niceStep(max/3), top = Math.ceil(max/step)*step;
+  const pw = W - L - R, ph = H - T - B, slot = pw/days.length, bw = Math.max(6, Math.min(30, slot*0.62));
+  const y = v => T + ph - (v/top)*ph;
+  let g = "";
+  for (let v = 0; v <= top + 1e-6; v += step){ const yy = y(v).toFixed(1);
+    g += `<line x1="${L}" x2="${W-R}" y1="${yy}" y2="${yy}" stroke="${v === 0 ? "var(--axis)" : "var(--grid)"}" stroke-width="1"/>`;
+    g += `<text x="${L-8}" y="${(+yy+4).toFixed(1)}" text-anchor="end">${arsShort(v)}</text>`; }
+  vals.forEach((e,i) => {
+    const cx = L + slot*i + slot/2, x0 = cx - bw/2, x1 = cx + bw/2;
+    if (e.total > 0){ const y0 = y(e.total), h = T + ph - y0, r = Math.min(4, bw/2, h);
+      g += `<path d="M${x0.toFixed(1)},${(T+ph).toFixed(1)} L${x0.toFixed(1)},${(y0+r).toFixed(1)} Q${x0.toFixed(1)},${y0.toFixed(1)} ${(x0+r).toFixed(1)},${y0.toFixed(1)} L${(x1-r).toFixed(1)},${y0.toFixed(1)} Q${x1.toFixed(1)},${y0.toFixed(1)} ${x1.toFixed(1)},${(y0+r).toFixed(1)} L${x1.toFixed(1)},${(T+ph).toFixed(1)} Z" fill="var(--accent)" data-i="${i}" class="b"/>`; }
+    const showLbl = i === days.length-1 || (i % 2 === 1 && i < days.length-2) ;
+    if (showLbl) g += `<text x="${cx.toFixed(1)}" y="${H-6}" text-anchor="middle">${i === days.length-1 ? "Hoy" : parseISO(days[i]).getDate()}</text>`;
+    g += `<rect x="${(L+slot*i).toFixed(1)}" y="${T}" width="${slot.toFixed(1)}" height="${ph}" fill="transparent" data-i="${i}" class="hit" style="cursor:pointer"/>`;
+  });
+  box.innerHTML = `<svg viewBox="0 0 ${W} ${H}" width="${W}" height="${H}" role="img" aria-label="Ventas por día de los últimos 14 días">${g}</svg>`;
+  const svg = box.querySelector("svg");
+  const show = (i) => {
+    const e = vals[i]; const cx = L + slot*i + slot/2; const yy = e.total > 0 ? y(e.total) : T + ph;
+    let tip = box.querySelector(".tip"); if (!tip){ tip = document.createElement("div"); tip.className = "tip"; box.appendChild(tip); }
+    tip.innerHTML = `${esc(fechaLarga(days[i]))}<br><b>${ars(e.total)}</b> · ${e.n} ${e.n === 1 ? "venta" : "ventas"}${e.n ? `<br>Ganancia ${ars(e.gan)}` : ""}`;
+    const scale = box.clientWidth / W;
+    let left = cx*scale; left = Math.max(70, Math.min(box.clientWidth - 70, left));
+    tip.style.left = left + "px"; tip.style.top = (yy*scale - 8) + "px";
+    svg.querySelectorAll(".b").forEach(b => b.style.opacity = (+b.dataset.i === i ? "1" : "0.55"));
+  };
+  const hide = () => { const t = box.querySelector(".tip"); if (t) t.remove(); svg.querySelectorAll(".b").forEach(b => b.style.opacity = "1"); };
+  svg.querySelectorAll(".hit").forEach(h => { h.addEventListener("mouseenter", () => show(+h.dataset.i)); h.addEventListener("click", () => show(+h.dataset.i)); });
+  svg.addEventListener("mouseleave", hide);
+}
+
+/* ---------- VENDER ---------- */
+function renderPicks(C){
+  const cats = categorias(C.rows);
+  $("#venderCats").innerHTML = chipsHTML([["Todas","Todas"], ...cats.map(c => [c,c,catColor(c)])], S.venderCat, "data-vcat");
+  const q = S.venderQ.trim().toLowerCase();
+  const list = C.rows.filter(r => (S.venderCat === "Todas" || r.categoria === S.venderCat) && (!q || (r.nombre + " " + (r.codigo||"")).toLowerCase().includes(q)));
+  const inCart = new Map(S.cart.map(c => [c.pid, c.cant]));
+  $("#picks").innerHTML = list.length ? list.map(r => {
+    const enc = inCart.get(r.id) || 0, disp = r.stock - enc;
+    return `<button type="button" class="pick ${disp <= 0 ? "out" : ""}" data-add="${esc(r.id)}">
+      <span class="dot" style="background:${catColor(r.categoria)}"></span>
+      <span style="min-width:0"><span class="nm">${esc(r.nombre)}</span><br><span class="small muted">${esc(r.categoria)}${enc ? ` · <b style="color:var(--accent)">${enc} en la venta</b>` : ""}</span></span>
+      <span class="small ${disp <= 0 ? "" : "muted"}" style="${disp <= 0 ? "color:var(--crit);font-weight:700" : ""}">${disp <= 0 ? "Sin stock" : int(disp) + " disp."}</span>
+      <span class="pr">${ars(r.precio)}</span></button>`; }).join("")
+    : (S.productos.length ? `<div class="empty">No encontré productos con “${esc(S.venderQ)}”.</div>` : `<div class="empty">Cargando productos…</div>`);
+}
+function renderCart(C){
+  const el = $("#cartCard");
+  const m = S.cartMeta;
+  const total = S.cart.reduce((a,c) => a + c.precio*c.cant, 0);
+  const costo = S.cart.reduce((a,c) => a + c.costo*c.cant, 0);
+  const gan = total - costo;
+  const sinStock = S.cart.filter(c => { const r = C.byId.get(c.pid); return r && c.cant > r.stock; });
+  el.innerHTML = `
+    <div class="row between"><h2>Venta</h2>${S.cart.length ? `<button class="btn ghost small" type="button" id="cartClear">Vaciar</button>` : ""}</div>
+    ${S.cart.length ? `<div>${S.cart.map((c,i) => `
+      <div class="citem">
+        <span class="pname" style="overflow-wrap:anywhere">${esc(c.nombre)}</span>
+        <b class="num">${ars(c.precio*c.cant)}</b>
+        <div class="ctrl">
+          <span class="step"><button type="button" data-dec="${i}" aria-label="Restar uno">−</button><input type="number" min="1" step="1" value="${c.cant}" data-cant="${i}" id="cant-${esc(c.pid)}" aria-label="Cantidad"><button type="button" data-inc="${i}" aria-label="Sumar uno">+</button></span>
+          <span class="price-in small muted">a $<input type="number" min="0" step="100" value="${c.precio}" data-precio="${i}" id="precio-${esc(c.pid)}" aria-label="Precio unitario"> c/u</span>
+          <button type="button" class="btn ghost small" data-del="${i}" style="margin-left:auto;color:var(--crit)">Quitar</button>
+        </div>
+      </div>`).join("")}</div>` : `<div class="empty">Tocá un producto de la lista para agregarlo a la venta.</div>`}
+    ${sinStock.length ? `<div class="notice crit small">Ojo: ${sinStock.map(c => esc(c.nombre)).join(", ")} ${sinStock.length === 1 ? "supera" : "superan"} el stock que figura. Podés registrarla igual.</div>` : ""}
+    <div class="totals">
+      <span class="muted">Costo de la mercadería</span><span class="num">${ars(costo)}</span>
+      <span class="muted">Ganancia</span><span class="num" style="color:${gan < 0 ? "var(--crit)" : "var(--good)"};font-weight:700">${ars(gan)}${total > 0 ? ` · ${pct(gan/total)}` : ""}</span>
+      <span style="align-self:end;font-weight:600">Total a cobrar</span><span class="t num">${ars(total)}</span>
+    </div>
+    <div class="fields">
+      <label class="f">Fecha<input type="date" id="vFecha" value="${esc(m.fecha)}"></label>
+      <label class="f">Medio de pago<select id="vMedio">${MEDIOS.map(x => `<option ${x === m.medio ? "selected" : ""}>${x}</option>`).join("")}</select></label>
+      <label class="f">Cliente (opcional)<input type="text" id="vCliente" value="${esc(m.cliente)}" placeholder="Ej: Sofi"></label>
+      <label class="f">Nota (opcional)<input type="text" id="vNota" value="${esc(m.nota)}" placeholder="Ej: envío a domicilio"></label>
+    </div>
+    <button class="btn primary big needs-write" type="button" id="vGuardar" ${S.cart.length ? "" : "disabled"}>Registrar venta${total > 0 ? " · " + ars(total) : ""}</button>`;
+}
+function addToCart(pid, C){
+  const r = C.byId.get(pid); if (!r) return;
+  const c = S.cart.find(x => x.pid === pid);
+  if (c) c.cant += 1; else S.cart.push({pid, nombre:r.nombre, categoria:r.categoria, cant:1, precio:r.precio, costo:r.costo});
+  renderCart(C); renderPicks(C);
+}
+async function guardarVenta(){
+  if (!S.cart.length) return;
+  const items = S.cart.map(c => ({pid:c.pid, nombre:c.nombre, categoria:c.categoria, cant:Math.max(1, Math.round(+c.cant||1)), precio:Math.max(0, +c.precio||0), costo:+c.costo||0}));
+  const total = items.reduce((a,i) => a + i.precio*i.cant, 0);
+  const costo = items.reduce((a,i) => a + i.costo*i.cant, 0);
+  const doc = {fecha: S.cartMeta.fecha || hoy(), creado: Date.now(), items, total, costo, medio: S.cartMeta.medio, cliente: S.cartMeta.cliente.trim().slice(0,80), nota: S.cartMeta.nota.trim().slice(0,200)};
+  const btn = $("#vGuardar"); if (btn) btn.disabled = true;
+  const ok = await write("addVenta", doc, "Venta registrada · " + ars(total));
+  if (ok){ S.cart = []; S.cartMeta = {fecha: hoy(), medio: S.cartMeta.medio, cliente:"", nota:""}; }
+  renderAll();
+}
+
+/* ---------- STOCK ---------- */
+function renderStock(C){
+  const cats = categorias(C.rows);
+  $("#stockCats").innerHTML = chipsHTML([["Todas","Todas"], ...cats.map(c => [c,c,catColor(c)])], S.stockCat, "data-scat");
+  $("#soloBajo").setAttribute("aria-pressed", String(S.soloBajo));
+  $("#catList").innerHTML = [...new Set([...cats, "Ropa"])].map(c => `<option value="${esc(c)}">`).join("");
+  const pend = C.rows.filter(r => r.pendiente);
+  const rr = $("#recibirRow");
+  if (S.confirm === "recibir") rr.innerHTML = `<div class="notice" style="flex:1">¿Marcar los ${pend.length} productos pendientes como recibidos con la cantidad pedida? Después podés corregir uno por uno.</div><div class="row"><button class="btn primary" type="button" id="recibirSi">Sí, marcar</button><button class="btn" type="button" id="recibirNo">Cancelar</button></div>`;
+  else rr.innerHTML = pend.length ? `<span class="small muted">${pend.length} productos todavía figuran como “por llegar”. Cuando llegue el pedido, cargá cuántos recibiste de cada uno.</span><button class="btn" type="button" id="recibirTodo">Llegó todo completo</button>` : "";
+  const q = S.stockQ.trim().toLowerCase();
+  const list = C.rows.filter(r => (S.stockCat === "Todas" || r.categoria === S.stockCat) && (!q || (r.nombre + " " + (r.codigo||"")).toLowerCase().includes(q)) && (!S.soloBajo || r.stock <= 1));
+  const tot = list.reduce((a,r) => { a.ped += +r.pedido||0; a.rec += r.pendiente ? 0 : (+r.recibido||0); a.ven += r.vendidos; a.st += Math.max(0,r.stock); a.vc += Math.max(0,r.stock)*r.costo; a.vv += Math.max(0,r.stock)*r.precio; return a; }, {ped:0,rec:0,ven:0,st:0,vc:0,vv:0});
+  const ro = !S.canWrite;
+  safeRender($("#stockTable"), () => {
+    $("#stockTable").innerHTML = list.length ? `<table>
+      <thead><tr><th>Producto</th><th class="r">Pedido</th><th class="r">Recibido</th><th class="r">Vendidos</th><th class="r">Stock</th><th>Estado</th><th class="r">Costo real</th><th class="r">Sugerido</th><th class="r">Tu precio</th><th class="r">Ganás c/u</th><th class="r">Margen</th></tr></thead>
+      <tbody>${list.map(r => `<tr>
+        <td><div class="row" style="gap:8px;flex-wrap:nowrap"><span class="dot" style="background:${catColor(r.categoria)}"></span><div><div class="pname">${esc(r.nombre)}</div><div class="pcode">${esc(r.categoria)}${r.codigo ? " · " + esc(r.codigo) : ""}</div></div></div></td>
+        <td class="r num">${int(r.pedido)}</td>
+        <td class="r">${ro ? (r.pendiente ? "–" : int(r.recibido)) : `<input type="number" min="0" step="1" id="rec-${esc(r.id)}" data-rec="${esc(r.id)}" value="${r.pendiente ? "" : esc(r.recibido)}" placeholder="–" aria-label="Recibido de ${esc(r.nombre)}">`}</td>
+        <td class="r num">${int(r.vendidos)}</td>
+        <td class="r num"><b>${int(r.stock)}</b></td>
+        <td>${stockPill(r)}</td>
+        <td class="r num">${ars(r.costo)}${+r.desc ? `<div class="pcode">lista ${ars(r.precioLista)} −${pct(+r.desc)}</div>` : ""}</td>
+        <td class="r num muted">${ars(r.sugerido)}</td>
+        <td class="r">${ro ? (r.propio ? ars(r.precio) : "–") : `<input type="number" min="0" step="100" id="pv-${esc(r.id)}" data-pv="${esc(r.id)}" value="${r.propio ? esc(r.precioVenta) : ""}" placeholder="${esc(r.sugerido)}" aria-label="Tu precio de ${esc(r.nombre)}">`}</td>
+        <td class="r num" style="color:${r.gan < 0 ? "var(--crit)" : "inherit"}">${ars(r.gan)}</td>
+        <td class="r num">${pct(r.margen)}</td></tr>`).join("")}</tbody>
+      <tfoot><tr><td>Total (${list.length} productos)</td><td class="r num">${int(tot.ped)}</td><td class="r num">${int(tot.rec)}</td><td class="r num">${int(tot.ven)}</td><td class="r num">${int(tot.st)}</td><td colspan="2" class="small">Stock a costo: <span class="num">${ars(tot.vc)}</span></td><td colspan="4" class="small r">Si vendés este stock: <span class="num">${ars(tot.vv)}</span></td></tr></tfoot>
+    </table>` : `<div class="empty">${S.productos.length ? "Ningún producto coincide con el filtro." : (S.loaded.p ? "Todavía no hay productos. Agregá el primero abajo." : "Cargando productos…")}</div>`;
+  });
+  const mk = $("#cfgMarkup"), rd = $("#cfgRedondeo");
+  if (document.activeElement !== mk) mk.value = Math.round((+S.config.markup||0)*1000)/10;
+  if (document.activeElement !== rd) rd.value = +S.config.redondeo || 100;
+  mk.disabled = rd.disabled = ro;
+}
+
+/* ---------- VENTAS ---------- */
+function renderVentas(){
+  $("#perVentas").innerHTML = chipsHTML(PERIODOS, S.perVentas, "data-pv-per");
+  const list = S.ventas.filter(v => inPeriod(v.fecha, S.perVentas));
+  const total = list.reduce((a,v) => a + (+v.total||0), 0), costo = list.reduce((a,v) => a + (+v.costo||0), 0);
+  const u = list.reduce((a,v) => a + (v.items||[]).reduce((b,i) => b + (+i.cant||0), 0), 0);
+  const porMedio = {}; for (const v of list) porMedio[v.medio||"Otro"] = (porMedio[v.medio||"Otro"]||0) + (+v.total||0);
+  $("#ventasKpis").innerHTML = `
+    <div class="kpi"><span class="label">Ventas</span><span class="value num">${int(list.length)}</span><span class="sub">${int(u)} unidades</span></div>
+    <div class="kpi"><span class="label">Ingresos</span><span class="value num">${ars(total)}</span><span class="sub">Ticket promedio ${list.length ? ars(total/list.length) : "–"}</span></div>
+    <div class="kpi"><span class="label">Ganancia bruta</span><span class="value num">${ars(total-costo)}</span><span class="sub">Margen ${total ? pct((total-costo)/total) : "–"}</span></div>
+    <div class="kpi"><span class="label">Por medio de pago</span><span class="sub" style="font-size:13px;color:var(--ink-2)">${Object.keys(porMedio).length ? Object.entries(porMedio).sort((a,b) => b[1]-a[1]).map(([k,v]) => `${esc(k)}: <b class="num">${ars(v)}</b>`).join("<br>") : "–"}</span></div>`;
+  if (!list.length){ $("#ventasList").innerHTML = `<div class="empty">${S.ventas.length ? "No hay ventas en este período." : (S.loaded.v ? "Todavía no registraste ventas. Andá a <a href=\"#vender\" data-go=\"vender\">Vender</a> para cargar la primera." : "Cargando ventas…")}</div>`; return; }
+  const byDay = new Map();
+  for (const v of list){ if (!byDay.has(v.fecha)) byDay.set(v.fecha, []); byDay.get(v.fecha).push(v); }
+  $("#ventasList").innerHTML = [...byDay.entries()].map(([d, vs]) => `
+    <div class="day"><h3><span>${esc(fechaLarga(d))}</span><span class="num">${ars(vs.reduce((a,v) => a + (+v.total||0), 0))}</span></h3>
+    ${vs.map(v => `<div class="card sale">
+      <div style="min-width:0"><div class="row" style="gap:8px"><span class="pill neutral">${esc(v.medio || "–")}</span>${v.cliente ? `<b>${esc(v.cliente)}</b>` : ""}</div>
+        <div class="its" style="margin-top:6px">${(v.items||[]).map(i => `${int(i.cant)}× ${esc(i.nombre)} <span class="muted num">(${ars(i.precio)})</span>`).join(" · ")}</div>
+        ${v.nota ? `<div class="small muted" style="margin-top:4px">${esc(v.nota)}</div>` : ""}</div>
+      <div class="amt"><b>${ars(v.total)}</b><div class="small" style="color:var(--good)">+${ars((+v.total||0) - (+v.costo||0))}</div></div>
+      <div class="acts needs-write">${S.confirm === "v:" + v.id ? `<span class="small">¿Borrar esta venta? El stock vuelve a sumar.</span><button class="btn danger small" type="button" data-vdel-ok="${esc(v.id)}">Sí, borrar</button><button class="btn small" type="button" data-cancel="1">No</button>` : `<button class="btn ghost small" type="button" data-vdel="${esc(v.id)}" style="color:var(--muted);padding-left:0">Borrar venta</button>`}</div>
+    </div>`).join("")}</div>`).join("");
+}
+
+/* ---------- GASTOS ---------- */
+function renderGastos(){
+  const gs = S.gastos;
+  const tot = gs.reduce((a,g) => a + (+g.monto||0), 0);
+  $("#gastosTable").innerHTML = gs.length ? `<table><thead><tr><th>Fecha</th><th>Concepto</th><th class="r">Monto</th><th class="needs-write"></th></tr></thead>
+    <tbody>${gs.map(g => `<tr><td class="num">${esc(fechaCorta(g.fecha))}</td><td>${esc(g.concepto)}</td><td class="r num">${ars(g.monto)}</td>
+      <td class="r needs-write">${S.confirm === "g:" + g.id ? `<button class="btn danger small" type="button" data-gdel-ok="${esc(g.id)}">Borrar</button> <button class="btn small" type="button" data-cancel="1">No</button>` : `<button class="btn ghost small" type="button" data-gdel="${esc(g.id)}" style="color:var(--muted)">Borrar</button>`}</td></tr>`).join("")}</tbody>
+    <tfoot><tr><td colspan="2">Total gastos</td><td class="r num">${ars(tot)}</td><td class="needs-write"></td></tr></tfoot></table>`
+    : `<div class="empty" style="border:0">${S.loaded.g ? "Sin gastos cargados. Si pagaste envío o packaging, registralo arriba." : "Cargando gastos…"}</div>`;
+}
+
+/* ---------- render general ---------- */
+function renderAll(){
+  const C = calc();
+  renderResumen(C); renderPicks(C); safeRender($("#cartCard"), () => renderCart(C)); renderStock(C); renderVentas(); renderGastos();
+  applyRO();
+}
+onFocusOut($("#cartCard"), () => renderCart(calc()));
+function setTab(t){
+  if (!["resumen","vender","stock","ventas","gastos"].includes(t)) t = "resumen";
+  S.tab = t; remember("tab", t);
+  document.querySelectorAll(".tab").forEach(b => b.setAttribute("aria-selected", String(b.dataset.tab === t)));
+  document.querySelectorAll("section[data-panel]").forEach(s => s.hidden = s.dataset.panel !== t);
+  if (t === "resumen") drawChart();
+  window.scrollTo({top:0});
+}
+
+/* ---------- eventos ---------- */
+document.querySelector(".tabs").addEventListener("click", e => { const b = e.target.closest(".tab"); if (b) setTab(b.dataset.tab); });
+document.addEventListener("click", e => {
+  const go = e.target.closest("[data-go]"); if (go){ e.preventDefault(); setTab(go.dataset.go); return; }
+  const t = e.target.closest("button"); if (!t) return;
+  const C = calc();
+  if (t.dataset.per){ S.perResumen = t.dataset.per; remember("perResumen", S.perResumen); renderResumen(C); }
+  else if (t.dataset.pvPer){ S.perVentas = t.dataset.pvPer; remember("perVentas", S.perVentas); renderVentas(); }
+  else if (t.dataset.vcat){ S.venderCat = t.dataset.vcat; renderPicks(C); }
+  else if (t.dataset.scat){ S.stockCat = t.dataset.scat; renderStock(C); }
+  else if (t.id === "soloBajo"){ S.soloBajo = !S.soloBajo; renderStock(C); }
+  else if (t.dataset.add){ if (!S.canWrite) { toast("Modo lectura: no se pueden registrar ventas."); return; } addToCart(t.dataset.add, C); }
+  else if (t.dataset.inc != null){ S.cart[+t.dataset.inc].cant++; renderCart(C); renderPicks(C); }
+  else if (t.dataset.dec != null){ const c = S.cart[+t.dataset.dec]; if (c.cant > 1) c.cant--; else S.cart.splice(+t.dataset.dec, 1); renderCart(C); renderPicks(C); }
+  else if (t.dataset.del != null){ S.cart.splice(+t.dataset.del, 1); renderCart(C); renderPicks(C); }
+  else if (t.id === "cartClear"){ S.cart = []; renderCart(C); renderPicks(C); }
+  else if (t.id === "vGuardar"){ guardarVenta(); }
+  else if (t.id === "recibirTodo"){ S.confirm = "recibir"; renderStock(C); }
+  else if (t.id === "recibirNo"){ S.confirm = null; renderStock(C); }
+  else if (t.id === "recibirSi"){ S.confirm = null; recibirTodo(C); }
+  else if (t.dataset.vdel){ S.confirm = "v:" + t.dataset.vdel; renderVentas(); }
+  else if (t.dataset.vdelOk){ const id = t.dataset.vdelOk; S.confirm = null; write("delVenta", {id}, "Venta borrada"); }
+  else if (t.dataset.gdel){ S.confirm = "g:" + t.dataset.gdel; renderGastos(); }
+  else if (t.dataset.gdelOk){ const id = t.dataset.gdelOk; S.confirm = null; write("delGasto", {id}, "Gasto borrado"); }
+  else if (t.dataset.cancel){ S.confirm = null; renderVentas(); renderGastos(); }
+});
+async function recibirTodo(C){
+  const pend = C.rows.filter(r => r.pendiente);
+  await write("recibirTodo", {}, `${pend.length} productos marcados como recibidos`);
+}
+$("#venderQ").addEventListener("input", e => { S.venderQ = e.target.value; renderPicks(calc()); });
+$("#stockQ").addEventListener("input", e => { S.stockQ = e.target.value; renderStock(calc()); });
+
+// Carrito: cambios en cantidades, precios y datos de la venta
+$("#cartCard").addEventListener("change", e => {
+  const el = e.target; const C = calc();
+  if (el.dataset.cant != null){ const v = Math.round(+el.value); const i = +el.dataset.cant; if (v >= 1) S.cart[i].cant = v; else S.cart.splice(i,1); renderCart(C); renderPicks(C); }
+  else if (el.dataset.precio != null){ const v = +el.value; if (isFinite(v) && v >= 0) S.cart[+el.dataset.precio].precio = Math.round(v); renderCart(C); }
+  else if (el.id === "vFecha") S.cartMeta.fecha = el.value || hoy();
+  else if (el.id === "vMedio") S.cartMeta.medio = el.value;
+});
+$("#cartCard").addEventListener("input", e => {
+  if (e.target.id === "vCliente") S.cartMeta.cliente = e.target.value;
+  if (e.target.id === "vNota") S.cartMeta.nota = e.target.value;
+});
+
+// Stock: recibido y precio propio
+const stockTable = $("#stockTable");
+stockTable.addEventListener("change", e => {
+  const el = e.target;
+  if (el.dataset.rec){
+    const raw = el.value.trim(); const val = raw === "" ? null : Math.max(0, Math.round(+raw));
+    if (raw !== "" && !isFinite(+raw)) return;
+    write("setProducto", {nombre: el.dataset.rec, recibido: val});
+  } else if (el.dataset.pv){
+    const raw = el.value.trim(); const val = raw === "" ? null : Math.max(0, Math.round(+raw));
+    if (raw !== "" && !isFinite(+raw)) return;
+    write("setProducto", {nombre: el.dataset.pv, precioVenta: val}, val == null ? "Vuelve al precio sugerido" : "Precio guardado");
+  }
+});
+stockTable.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches("input")) e.target.blur(); });
+onFocusOut(stockTable, () => renderStock(calc()));
+
+// Configuración de precios
+let cfgTimer;
+function saveCfg(){
+  clearTimeout(cfgTimer);
+  cfgTimer = setTimeout(() => {
+    const mk = +$("#cfgMarkup").value, rd = Math.round(+$("#cfgRedondeo").value);
+    if (!isFinite(mk) || mk < 0 || !isFinite(rd) || rd < 1) { toast("Revisá los valores: markup desde 0% y redondeo desde $1.", "crit"); return; }
+    const next = {markup: Math.round(mk*10)/1000, redondeo: rd};
+    if (next.markup === +S.config.markup && next.redondeo === +S.config.redondeo) return;
+    write("setConfig", next, "Precios sugeridos actualizados");
+  }, 350);
+}
+$("#cfgMarkup").addEventListener("change", saveCfg);
+$("#cfgRedondeo").addEventListener("change", saveCfg);
+
+// Agregar producto
+$("#addForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const nombre = $("#apNombre").value.trim(), cat = $("#apCat").value.trim(), costo = +$("#apCosto").value, cant = Math.round(+$("#apCant").value);
+  if (!nombre || !cat || !isFinite(costo) || costo < 0 || !(cant >= 1)) { toast("Completá nombre, categoría, costo y cantidad.", "crit"); return; }
+  const pvRaw = $("#apPrecio").value.trim();
+  if (S.productos.some(p => p.nombre.toLowerCase() === nombre.toLowerCase())) { toast("Ya hay un producto con ese nombre.", "crit"); return; }
+  const doc = {categoria:cat.slice(0,40), codigo:$("#apCodigo").value.trim().slice(0,40), nombre:nombre.slice(0,80), cant,
+    recibido: $("#apRecibido").checked, costo:Math.round(costo), precioVenta: pvRaw === "" ? null : Math.max(0, Math.round(+pvRaw))};
+  const ok = await write("addProducto", doc, "Producto agregado: " + nombre);
+  if (ok) { e.target.reset(); $("#apCant").value = 1; $("#apRecibido").checked = true; }
+});
+
+// Gastos
+$("#gFecha").value = hoy();
+$("#gastoForm").addEventListener("submit", async e => {
+  e.preventDefault();
+  const concepto = $("#gConcepto").value.trim(), monto = +$("#gMonto").value, fecha = $("#gFecha").value || hoy();
+  if (!concepto || !isFinite(monto) || monto <= 0) { toast("Completá concepto y un monto mayor a 0.", "crit"); return; }
+  const ok = await write("addGasto", {fecha, concepto:concepto.slice(0,80), monto:Math.round(monto)}, "Gasto registrado · " + ars(monto));
+  if (ok) { $("#gConcepto").value = ""; $("#gMonto").value = ""; }
+});
+
+let rz; window.addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(() => { if (S.tab === "resumen") drawChart(); }, 150); });
+
+/* ---------- arranque ---------- */
+const startTab = (location.hash || "").slice(1);
+setTab(startTab || S.tab);
+renderAll();
+
+$("#salir").addEventListener("click", () => { olvidarClave(); mostrarGate(""); });
+if (!API_URL){
+  setSync("err","Sin conectar");
+  $("#globalNotice").innerHTML = `<div class="notice crit">Falta conectar la planilla: pegá la URL del Apps Script en <code>API_URL</code> dentro de index.html.</div>`;
+} else {
+  cargar(false); // sin clave guardada, la planilla responde si hay que entrar o crear la clave
+}
+setInterval(() => { if (!document.hidden && S.clave) cargar(true); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && S.clave) cargar(true); });
+})();
+</script>
+</body>
+</html>
