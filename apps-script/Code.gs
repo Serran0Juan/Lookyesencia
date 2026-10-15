@@ -204,7 +204,7 @@ function borrarPorId_(hoja, id) {
 function prepararHojas_() {
   const ss = SpreadsheetApp.getActive();
   const props = PropertiesService.getScriptProperties();
-  if (props.getProperty('PREPARADA') === '2') return;
+  if (props.getProperty('PREPARADA') === '3') return;
 
   let vs = ss.getSheetByName(VEN);
   if (!vs) vs = crearHoja_(ss, VEN, VEN_HEAD, [16, 12, 15, 16, 26, 28, 18, 10, 14, 14, 13, 13, 22]);
@@ -233,12 +233,13 @@ function prepararHojas_() {
       }
     });
     if (filas.length) agregarFilas_(vs, filas, ['=RC[-3]*RC[-2]', '=RC[-1]-RC[-4]*RC[-2]'], 11);
-    inv.getRange(PRIMERA, C.vendidos, n, 1).setFormulaR1C1("=SUMIFS(Ventas!C8,Ventas!C6,RC4)")
-       .setFontColor('#008000').setBackground(null);
+    const formulas = [];
+    for (let r = PRIMERA; r <= ultima; r++) formulas.push(['=SUMIFS(Ventas!$H:$H,Ventas!$F:$F,$D' + r + ')']);
+    inv.getRange(PRIMERA, C.vendidos, n, 1).setFormulas(formulas).setFontColor('#008000').setBackground(null);
     inv.getRange(2, 1).setValue('Celdas amarillas = las completás vos (o desde el panel): Recibido y Tu precio de venta. ' +
                                 'Vendidos se calcula solo desde la hoja Ventas.');
   }
-  props.setProperty('PREPARADA', '2');
+  props.setProperty('PREPARADA', '3');
 }
 
 function crearHoja_(ss, nombre, head, anchos) {
