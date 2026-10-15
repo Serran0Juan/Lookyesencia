@@ -352,7 +352,7 @@ details.add[open] summary::before{content:"–"}
 (function(){
 "use strict";
 // URL de la aplicación web del Apps Script de la planilla (termina en /exec)
-const API_URL = "";
+const API_URL = "https://script.google.com/macros/s/AKfycbyPcFlB3GswAnQlqwxtj4I49mWnpXxoWYw1hejuSS0Q0E04PkvuYLq8tT9xjwVdK74/exec";
 const $ =(s, el=document) => el.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const ars = n => (n < 0 ? "-$" : "$") + Math.round(Math.abs(+n || 0)).toLocaleString("es-AR");
