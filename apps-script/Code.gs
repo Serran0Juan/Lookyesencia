@@ -24,6 +24,8 @@ const GAS_HEAD = ['ID gasto', 'Fecha', 'Concepto', 'Monto ($)', 'Registrado'];
 const PED_HEAD = ['ID pedido', 'Fecha', 'Cliente', 'Contacto', 'Dónde', 'Estado', 'Seña ($)', 'Nota',
                   'Producto', 'Cantidad', 'Precio unit. ($)', 'ID venta', 'Registrado'];
 const ESTADOS = ['Pendiente', 'Entregado', 'Cancelado'];
+// Carpeta "Look y estilo" del Drive: adentro se crea "Fotos del panel" para las fotos que se suben.
+const CARPETA_DRIVE = '1EpJ40lr71W6AyAfplC2zavgPLrb_Rv_B';
 const VERSION_HOJAS = '4';
 
 // Fotos de los productos de la primera compra (salen del catálogo del proveedor).
@@ -86,6 +88,7 @@ function manejar_(req) {
       case 'estado': case 'crearClave': break;
       case 'setProducto': setProducto_(req); break;
       case 'setFoto': setFoto_(req); break;
+      case 'subirFoto': subirFoto_(req); break;
       case 'recibirTodo': recibirTodo_(); break;
       case 'addProducto': addProducto_(req); break;
       case 'addVenta': addVenta_(req); break;
@@ -177,6 +180,37 @@ function setProducto_(req) {
 function setFoto_(req) {
   const inv = SpreadsheetApp.getActive().getSheetByName(INV);
   inv.getRange(filaDe_(inv, req.nombre), C.foto).setValue(rutaFoto_(req.foto));
+}
+
+// Foto sacada con el celular: se guarda en el Drive, se comparte "con el enlace" para poder
+// mostrarla en el panel y su dirección queda en la columna Foto.
+function subirFoto_(req) {
+  const inv = SpreadsheetApp.getActive().getSheetByName(INV);
+  const fila = filaDe_(inv, req.nombre);
+  const datos = String(req.data || '');
+  if (!datos) throw new Error('No llegó la foto');
+  if (datos.length > 6000000) throw new Error('La foto es muy pesada');
+  const nombre = limpio_(req.nombre, 60).replace(/[^\w\- ]+/g, '').trim() || 'producto';
+  const blob = Utilities.newBlob(Utilities.base64Decode(datos), 'image/jpeg', nombre + ' ' + Date.now() + '.jpg');
+  const archivo = carpetaFotos_().createFile(blob);
+  archivo.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  inv.getRange(fila, C.foto).setValue('https://drive.google.com/thumbnail?id=' + archivo.getId() + '&sz=w900');
+}
+
+function carpetaFotos_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('CARPETA_FOTOS');
+  if (id) { try { return DriveApp.getFolderById(id); } catch (e) {} }
+  const madre = DriveApp.getFolderById(CARPETA_DRIVE);
+  const existentes = madre.getFoldersByName('Fotos del panel');
+  const carpeta = existentes.hasNext() ? existentes.next() : madre.createFolder('Fotos del panel');
+  props.setProperty('CARPETA_FOTOS', carpeta.getId());
+  return carpeta;
+}
+
+// Ejecutar una vez desde el editor para dar permiso al Drive (subir fotos).
+function autorizar() {
+  Logger.log('Carpeta de fotos: ' + carpetaFotos_().getName());
 }
 
 function recibirTodo_() {
@@ -433,10 +467,12 @@ function filaDe_(inv, nombre) {
   return f;
 }
 
-// Solo se aceptan fotos del catálogo copiado al sitio (img/productos/...).
+// Solo se aceptan fotos del catálogo copiado al sitio (img/productos/...) o subidas al Drive desde el panel.
 function rutaFoto_(v) {
   const s = String(v || '').trim();
-  return /^img\/productos\/[A-Za-z0-9._-]+\.(jpg|jpeg|png|webp)$/.test(s) ? s : '';
+  if (/^img\/productos\/[A-Za-z0-9._-]+\.(jpg|jpeg|png|webp)$/.test(s)) return s;
+  if (/^https:\/\/drive\.google\.com\/thumbnail\?id=[A-Za-z0-9_-]+&sz=w\d+$/.test(s)) return s;
+  return '';
 }
 
 function fecha_(s) {
