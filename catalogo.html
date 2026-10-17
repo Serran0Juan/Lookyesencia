@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Catálogo Look y Estilo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: vitrina — barra de filtros fija y una grilla de frascos con su precio; el detalle se abre encima */
+:root{
+  --bg:#F4F2F6; --surface:#FFFFFF; --surface-2:#F8F7FA; --ink:#1D1A22; --ink-2:#57525F; --muted:#827C8A;
+  --line:#E3DFE8; --line-2:#CDC7D4;
+  --accent:#6E2F6B; --accent-ink:#FFFFFF; --accent-soft:#F2E7F1;
+  --good:#1D7520; --good-bg:#E4F2E4; --warn:#875700; --warn-bg:#FAEFD7; --crit:#B02F2F; --crit-bg:#FAE4E4;
+  --c1:#2a78d6; --c2:#eb6834; --c3:#1baf7a; --c4:#eda100; --c-otro:#898781;
+  --font-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
+  --font-body:"Figtree","Segoe UI",system-ui,-apple-system,sans-serif;
+  --r:12px; --r-sm:8px;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#141216; --surface:#1D1A21; --surface-2:#232028; --ink:#F1EEF3; --ink-2:#C4BECB; --muted:#8E8895;
+    --line:#2F2B35; --line-2:#443F4B;
+    --accent:#D892D1; --accent-ink:#1D1A22; --accent-soft:#3A2639;
+    --good:#55C455; --good-bg:#17301A; --warn:#E5AB3D; --warn-bg:#392B10; --crit:#F27C7C; --crit-bg:#3E1B1B;
+    --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c-otro:#898781;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#141216; --surface:#1D1A21; --surface-2:#232028; --ink:#F1EEF3; --ink-2:#C4BECB; --muted:#8E8895;
+  --line:#2F2B35; --line-2:#443F4B;
+  --accent:#D892D1; --accent-ink:#1D1A22; --accent-soft:#3A2639;
+  --good:#55C455; --good-bg:#17301A; --warn:#E5AB3D; --warn-bg:#392B10; --crit:#F27C7C; --crit-bg:#3E1B1B;
+  --c1:#3987e5; --c2:#d95926; --c3:#199e70; --c4:#c98500; --c-otro:#898781;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+[hidden]{display:none!important}
+img{max-width:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--font-body);font-size:15px;line-height:1.45;-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+.wrap{max-width:1180px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.num{font-variant-numeric:tabular-nums}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+
+.top{padding-block:20px 10px}
+.top .wrap{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.brand h1{font-family:var(--font-display);font-weight:700;font-size:clamp(26px,4.4vw,36px);line-height:1;margin:0;letter-spacing:-.015em}
+.brand p{margin:6px 0 0;color:var(--ink-2);font-size:14px}
+
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar .wrap{display:flex;flex-direction:column;gap:10px;padding-block:10px}
+.chips{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.chips::-webkit-scrollbar{display:none}
+.chip{border:1px solid var(--line-2);background:var(--surface);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600;color:var(--ink-2);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chip .n{font-weight:500;opacity:.7}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex:none}
+input[type=search],select{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:9px 11px;font-size:15px;min-width:0}
+.tools{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tools input[type=search]{flex:1 1 220px}
+.btn{border:1px solid var(--line-2);background:var(--surface);border-radius:var(--r-sm);padding:9px 14px;font-weight:600;font-size:14px;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;gap:6px}
+.btn:hover{border-color:var(--ink-2)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.btn.ghost{border-color:transparent;background:transparent}
+.btn.big{padding:13px 18px;font-size:15.5px;width:100%;justify-content:center}
+.btn:focus-visible,.chip:focus-visible,.card:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+main{padding-block:16px 64px;display:flex;flex-direction:column;gap:14px}
+.resumen{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:var(--ink-2);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:14px}
+@media (max-width:420px){.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column;cursor:pointer;text-align:left;padding:0;min-width:0}
+.card:hover{border-color:var(--line-2)}
+.foto{position:relative;aspect-ratio:4/5;background:var(--surface-2);overflow:hidden}
+.foto img{width:100%;height:100%;object-fit:cover;display:block}
+.foto .ph{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:34px;color:var(--muted);letter-spacing:.02em}
+.foto .tag{position:absolute;left:8px;top:8px}
+.card.out .foto img{filter:grayscale(.85);opacity:.6}
+.info{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.info .cat{font-size:11.5px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:600;display:flex;align-items:center;gap:6px}
+.info .nm{font-weight:600;font-size:14.5px;line-height:1.25;overflow-wrap:anywhere}
+.info .pie{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-top:auto;padding-top:6px}
+.precio{font-family:var(--font-display);font-weight:700;font-size:20px;font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+.pill{display:inline-flex;align-items:center;font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--good-bg);color:var(--good)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.crit{background:var(--crit-bg);color:var(--crit)}
+.pill.neutral{background:var(--surface-2);color:var(--ink-2);border:1px solid var(--line)}
+.empty{padding:32px 16px;text-align:center;color:var(--ink-2);border:1px dashed var(--line-2);border-radius:var(--r);background:var(--surface-2)}
+
+.modal{position:fixed;inset:0;z-index:55;background:rgba(20,18,22,.6);display:grid;place-items:center;padding:16px max(16px,env(safe-area-inset-right,0px)) 16px max(16px,env(safe-area-inset-left,0px))}
+.detalle{background:var(--surface);border-radius:var(--r);width:100%;max-width:760px;max-height:calc(100% - 16px);overflow:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+@media (max-width:640px){.detalle{grid-template-columns:minmax(0,1fr)}}
+.detalle .foto{aspect-ratio:4/5}
+.detalle .txt{padding:20px;display:flex;flex-direction:column;gap:10px}
+.detalle h2{font-family:var(--font-display);font-weight:700;font-size:26px;line-height:1.1;margin:0;text-wrap:balance}
+.detalle .precio{font-size:34px}
+.datos{display:grid;grid-template-columns:auto 1fr;gap:6px 14px;font-size:14px;margin:0}
+.datos dt{color:var(--muted)}
+.datos dd{margin:0;font-weight:600}
+
+.gate{position:fixed;inset:0;z-index:60;background:var(--bg);display:grid;place-items:center;padding:24px max(16px,env(safe-area-inset-right,0px)) 24px max(16px,env(safe-area-inset-left,0px))}
+.gate form{width:100%;max-width:380px;display:flex;flex-direction:column;gap:14px}
+.gate h1{font-family:var(--font-display);font-weight:700;font-size:30px;margin:0}
+.gate p{margin:0;color:var(--ink-2);font-size:14.5px}
+.gate label{display:flex;flex-direction:column;gap:4px;font-size:13px;color:var(--ink-2);font-weight:500}
+.gate input{background:var(--surface);border:1px solid var(--line-2);border-radius:var(--r-sm);padding:9px 11px;font-size:15px}
+.gate .err{color:var(--crit);font-weight:600;font-size:14px;min-height:1.4em}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:11px 16px;border-radius:10px;font-weight:600;font-size:14px;z-index:70;max-width:calc(100% - 32px)}
+.toast.crit{background:var(--crit);color:#fff}
+@media (prefers-reduced-motion:no-preference){.card{transition:border-color .15s}}
+</style>
+</head>
+<body>
+<div class="gate" id="gate" hidden>
+  <form id="gateForm" autocomplete="on">
+    <div><h1>Look y Estilo</h1><p id="gateText">Ingresá la clave del panel.</p></div>
+    <label>Clave<input type="password" id="gateClave" autocomplete="current-password" required minlength="6"></label>
+    <label id="gateRepWrap" hidden>Repetí la clave<input type="password" id="gateRep" autocomplete="new-password"></label>
+    <div class="err" id="gateErr" role="alert"></div>
+    <button class="btn primary big" type="submit" id="gateBtn">Entrar</button>
+  </form>
+</div>
+
+<header class="top">
+  <div class="wrap">
+    <div class="brand">
+      <h1>Look y Estilo</h1>
+      <p>Catálogo · lo que tengo y a cuánto lo vendo</p>
+    </div>
+    <div class="row">
+      <a class="btn" href="index.html">Gestión</a>
+      <button class="btn ghost small" type="button" id="salir" style="color:var(--ink-2)">Salir</button>
+    </div>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <div class="tools">
+      <input type="search" id="q" placeholder="Buscar (ej: yara, asad, body)" autocomplete="off" aria-label="Buscar producto">
+      <select id="orden" aria-label="Ordenar">
+        <option value="cat">Por categoría</option>
+        <option value="nombre">Nombre A–Z</option>
+        <option value="precio-asc">Precio: menor a mayor</option>
+        <option value="precio-desc">Precio: mayor a menor</option>
+        <option value="stock">Más stock primero</option>
+      </select>
+      <button class="chip" type="button" id="soloStock" aria-pressed="true">Solo lo que tengo</button>
+      <button class="btn" type="button" id="copiar">Copiar lista de precios</button>
+    </div>
+    <div class="chips" id="cats"></div>
+  </div>
+</div>
+
+<main class="wrap">
+  <div class="resumen"><span id="cuenta">Cargando catálogo…</span><span id="estado" class="muted"></span></div>
+  <div class="grid" id="grid"></div>
+</main>
+
+<div class="modal" id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="dNombre">
+  <div class="detalle" id="detalle"></div>
+</div>
+<div id="toastHost"></div>
+
+<script src="assets/comun.js"></script>
+<script>
+(function(){
+"use strict";
+const L = window.LYE;
+const {esc, ars, int, catColor, CAT_ORDER} = L;
+const $ = s => document.querySelector(s);
+const S = {rows: [], cat: "Todas", q: "", orden: L.recall("orden", "cat"), soloStock: L.recall("soloStock", "1") === "1", cargado: false};
+
+function toast(msg, kind){
+  const h = $("#toastHost"); h.innerHTML = "";
+  const t = document.createElement("div"); t.className = "toast" + (kind === "crit" ? " crit" : ""); t.textContent = msg; t.setAttribute("role","status");
+  h.appendChild(t); setTimeout(() => { h.innerHTML = ""; }, 2600);
+}
+function aplicar(d){ S.rows = L.calcular(d); S.cargado = true; render(); }
+async function cargar(silencioso){
+  try { aplicar(await L.api("estado")); $("#estado").textContent = ""; }
+  catch(e){
+    const c = e && e.error;
+    if (c === "clave"){ const habia = !!L.clave; L.olvidarClave(); L.mostrarGate(habia ? "La clave cambió o no es correcta. Ingresala de nuevo." : ""); }
+    else if (c === "sin_clave") L.mostrarGate("", true);
+    else if (!silencioso) $("#estado").textContent = c === "red" ? "Sin conexión con la planilla" : "No pude cargar el catálogo";
+  }
+}
+
+const categorias = rows => {
+  const out = CAT_ORDER.filter(c => rows.some(r => r.categoria === c));
+  rows.forEach(r => { if (!out.includes(r.categoria)) out.push(r.categoria); });
+  return out;
+};
+const pillDe = r => r.stock <= 0 ? `<span class="pill crit">Agotado</span>`
+  : r.stock === 1 ? `<span class="pill warn">Queda 1</span>`
+  : `<span class="pill ok">${int(r.stock)} en stock</span>`;
+const iniciales = n => String(n).replace(/^(Tubito|Mini|Body Splash)\s+/i, "").split(/\s+/).slice(0, 2).map(w => w[0] || "").join("").toUpperCase();
+const fotoHTML = r => r.img ? `<img src="${esc(r.img)}" alt="${esc(r.nombre)}" loading="lazy">` : `<span class="ph" aria-hidden="true">${esc(iniciales(r.nombre))}</span>`;
+
+function visibles(){
+  const q = L.norm(S.q).split(" ").filter(Boolean);
+  let list = S.rows.filter(r => (!S.soloStock || r.stock > 0) && (S.cat === "Todas" || r.categoria === S.cat)
+    && (!q.length || q.every(w => L.norm(r.nombre + " " + r.categoria).includes(w))));
+  const cats = categorias(S.rows);
+  const cmp = {
+    cat: (a, b) => cats.indexOf(a.categoria) - cats.indexOf(b.categoria) || a.nombre.localeCompare(b.nombre, "es"),
+    nombre: (a, b) => a.nombre.localeCompare(b.nombre, "es"),
+    "precio-asc": (a, b) => a.precio - b.precio || a.nombre.localeCompare(b.nombre, "es"),
+    "precio-desc": (a, b) => b.precio - a.precio || a.nombre.localeCompare(b.nombre, "es"),
+    stock: (a, b) => b.stock - a.stock || a.nombre.localeCompare(b.nombre, "es")
+  }[S.orden] || (() => 0);
+  return list.sort(cmp);
+}
+
+function render(){
+  const base = S.rows.filter(r => !S.soloStock || r.stock > 0);
+  const cats = categorias(S.rows);
+  $("#cats").innerHTML = [["Todas", base.length, ""], ...cats.map(c => [c, base.filter(r => r.categoria === c).length, catColor(c)])]
+    .map(([c, n, color]) => `<button class="chip" type="button" data-cat="${esc(c)}" aria-pressed="${c === S.cat}">${color ? `<span class="dot" style="background:${color}"></span>` : ""}${esc(c)} <span class="n">${n}</span></button>`).join("");
+  $("#soloStock").setAttribute("aria-pressed", String(S.soloStock));
+  $("#orden").value = S.orden;
+  if (!S.cargado){ $("#grid").innerHTML = ""; return; }
+  const list = visibles();
+  const unidades = list.reduce((a, r) => a + Math.max(0, r.stock), 0);
+  $("#cuenta").textContent = `${int(list.length)} ${list.length === 1 ? "producto" : "productos"} · ${int(unidades)} unidades`;
+  $("#grid").innerHTML = list.length ? list.map(r => `
+    <button type="button" class="card ${r.stock <= 0 ? "out" : ""}" data-id="${esc(r.id)}">
+      <div class="foto">${fotoHTML(r)}${r.stock <= 1 ? `<span class="tag">${pillDe(r)}</span>` : ""}</div>
+      <div class="info">
+        <span class="cat"><span class="dot" style="background:${catColor(r.categoria)}"></span>${esc(r.categoria)}</span>
+        <span class="nm">${esc(r.nombre)}</span>
+        <span class="pie"><span class="precio">${ars(r.precio)}</span><span class="small muted num">${r.stock > 0 ? int(r.stock) + " u." : ""}</span></span>
+      </div>
+    </button>`).join("")
+    : `<div class="empty" style="grid-column:1/-1">${S.rows.length ? "Nada coincide con la búsqueda." : "Todavía no hay productos cargados."}</div>`;
+}
+
+function abrir(id){
+  const r = S.rows.find(x => x.id === id); if (!r) return;
+  $("#detalle").innerHTML = `
+    <div class="foto">${fotoHTML(r)}</div>
+    <div class="txt">
+      <span class="small muted" style="display:flex;align-items:center;gap:6px"><span class="dot" style="background:${catColor(r.categoria)}"></span>${esc(r.categoria)}</span>
+      <h2 id="dNombre">${esc(r.nombre)}</h2>
+      <span class="precio">${ars(r.precio)}</span>
+      <div>${pillDe(r)}${r.pendiente ? ` <span class="pill neutral">Por llegar</span>` : ""}</div>
+      <dl class="datos">
+        <dt>En stock</dt><dd class="num">${int(Math.max(0, r.stock))}</dd>
+        <dt>En pedidos</dt><dd class="num">${r.reservado ? int(r.reservado) + (r.reservado > r.stock ? " (no alcanza)" : "") : "–"}</dd>
+        <dt>Vendidos</dt><dd class="num">${int(r.vendidos)}</dd>
+        ${r.propio ? "" : `<dt>Precio</dt><dd>sugerido (no le pusiste uno propio)</dd>`}
+      </dl>
+      <div class="row" style="margin-top:auto"><button class="btn" type="button" id="cerrar">Cerrar</button></div>
+    </div>`;
+  $("#modal").hidden = false;
+  $("#cerrar").focus();
+}
+const cerrar = () => { $("#modal").hidden = true; };
+
+function listaTexto(){
+  const list = visibles().filter(r => r.stock > 0);
+  const cats = categorias(list);
+  const partes = ["*Look y Estilo* · lista de precios"];
+  for (const c of cats){
+    const items = list.filter(r => r.categoria === c).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
+    if (!items.length) continue;
+    partes.push("", "*" + c + "*", ...items.map(r => "• " + r.nombre + " — " + ars(r.precio)));
+  }
+  return partes.join("\n");
+}
+async function copiar(){
+  const texto = listaTexto();
+  if (texto.split("\n").length < 3){ toast("No hay productos con stock para copiar.", "crit"); return; }
+  try { await navigator.clipboard.writeText(texto); toast("Lista copiada: pegala en WhatsApp"); }
+  catch(e){
+    const ta = document.createElement("textarea"); ta.value = texto; ta.style.cssText = "position:fixed;top:-1000px";
+    document.body.appendChild(ta); ta.select();
+    let ok = false; try { ok = document.execCommand("copy"); } catch(_){}
+    ta.remove(); toast(ok ? "Lista copiada: pegala en WhatsApp" : "No pude copiar la lista en este navegador.", ok ? "" : "crit");
+  }
+}
+
+document.addEventListener("click", e => {
+  const t = e.target.closest("button"); if (!t) { if (e.target.id === "modal") cerrar(); return; }
+  if (t.dataset.cat){ S.cat = t.dataset.cat; render(); }
+  else if (t.dataset.id){ abrir(t.dataset.id); }
+  else if (t.id === "cerrar"){ cerrar(); }
+  else if (t.id === "soloStock"){ S.soloStock = !S.soloStock; L.remember("soloStock", S.soloStock ? "1" : "0"); render(); }
+  else if (t.id === "copiar"){ copiar(); }
+  else if (t.id === "salir"){ L.olvidarClave(); L.mostrarGate(""); }
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#modal").hidden) cerrar(); });
+$("#q").addEventListener("input", e => { S.q = e.target.value; render(); });
+$("#orden").addEventListener("change", e => { S.orden = e.target.value; L.remember("orden", S.orden); render(); });
+
+L.iniciarGate(data => aplicar(data));
+render();
+L.cargarCatalogo().then(() => cargar(false));
+setInterval(() => { if (!document.hidden && L.clave) cargar(true); }, 60000);
+document.addEventListener("visibilitychange", () => { if (!document.hidden && L.clave) cargar(true); });
+})();
+</script>
+</body>
+</html>
