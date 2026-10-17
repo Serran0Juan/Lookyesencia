@@ -160,6 +160,22 @@ td input[type=number]{width:86px;padding:5px 7px;font-size:14px}
 .pick .nm{font-weight:600;overflow-wrap:anywhere}
 .pick .pr{font-weight:700;font-variant-numeric:tabular-nums}
 .pick.out{opacity:.65}
+.picks.fotos{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:10px;max-height:72vh;align-content:start}
+@media (max-width:420px){.picks.fotos{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.pcard{border:1px solid var(--line);background:var(--surface);border-radius:var(--r-sm);padding:0;overflow:hidden;cursor:pointer;text-align:left;display:flex;flex-direction:column;min-width:0}
+.pcard:hover{border-color:var(--accent)}
+.pcard:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.pcard.en{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}
+.pcard.out .pc-foto img{filter:grayscale(.85);opacity:.55}
+.pc-foto{position:relative;display:block;aspect-ratio:4/5;background:var(--surface-2)}
+.pc-foto img{width:100%;height:100%;object-fit:cover;display:block}
+.pc-foto .ph{position:absolute;inset:0;display:grid;place-items:center;font-family:var(--font-display);font-weight:700;font-size:26px;color:var(--muted)}
+.pc-tag{position:absolute;left:6px;top:6px}
+.pc-badge{position:absolute;right:6px;bottom:6px;background:var(--accent);color:var(--accent-ink);font-size:12px;font-weight:700;padding:2px 8px;border-radius:999px}
+.pc-info{padding:8px 10px 10px;display:flex;flex-direction:column;gap:4px;flex:1}
+.pc-info .nm{font-weight:600;font-size:13.5px;line-height:1.25;overflow-wrap:anywhere}
+.pc-pie{display:flex;justify-content:space-between;align-items:baseline;gap:6px;margin-top:auto}
+.pc-pie .pr{font-weight:700;font-variant-numeric:tabular-nums}
 .cart{position:sticky;top:calc(env(safe-area-inset-top,0px) + 66px);display:flex;flex-direction:column;gap:12px}
 .citem{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 10px;padding-block:10px;border-bottom:1px solid var(--line)}
 .citem:last-of-type{border-bottom:0}
@@ -297,7 +313,7 @@ details.add[open] summary::before{content:"–"}
   <section data-panel="vender" hidden>
     <div class="sell">
       <div style="display:flex;flex-direction:column;gap:10px;min-width:0">
-        <h2>Elegí los productos</h2>
+        <div class="row between"><h2>Elegí los productos</h2><div class="chips" id="venderVista" aria-label="Cómo ver los productos"></div></div>
         <input type="search" id="venderQ" placeholder="Buscar perfume (ej: yara, 9pm, body)" autocomplete="off">
         <div class="chips" id="venderCats"></div>
         <div class="picks" id="picks"></div>
@@ -450,7 +466,7 @@ const S = {
   loaded:{p:false, v:false, g:false},
   tab: recall("tab","resumen"),
   perResumen: recall("perResumen","todo"), perVentas: recall("perVentas","30"), perPedidos: "Pendiente",
-  venderQ:"", venderCat:"Todas", stockQ:"", stockCat:"Todas", soloBajo:false,
+  venderQ:"", venderCat:"Todas", vistaVender: recall("vistaVender","fotos"), stockQ:"", stockCat:"Todas", soloBajo:false,
   cart:[], cartMeta:{fecha:hoy(), medio:"Efectivo", cliente:"", nota:""},
   ped:{items:[]}, pedQ:"", entregaMedio:"Transferencia",
   fotoPara:null, apFoto:"",
@@ -494,6 +510,7 @@ function calc(){
   const rows = L.calcular({productos:S.productos, ventas:S.ventas, pedidos:S.pedidos, config:S.config});
   return {rows, byId: new Map(rows.map(r => [r.id, r]))};
 }
+const iniciales = n => String(n).replace(/^(Tubito|Mini|Body Splash)\s+/i, "").split(/\s+/).slice(0, 2).map(w => w[0] || "").join("").toUpperCase();
 const thumb = (img, size) => img
   ? `<img class="thumb${size ? " " + size : ""}" src="${esc(img)}" alt="" loading="lazy">`
   : `<span class="thumb${size ? " " + size : ""} empty" aria-hidden="true"></span>`;
@@ -700,6 +717,21 @@ function renderPicks(C){
   const q = S.venderQ.trim().toLowerCase();
   const list = C.rows.filter(r => (S.venderCat === "Todas" || r.categoria === S.venderCat) && (!q || (r.nombre + " " + (r.codigo||"")).toLowerCase().includes(q)));
   const inCart = new Map(S.cart.map(c => [c.pid, c.cant]));
+  const fotos = S.vistaVender === "fotos";
+  $("#venderVista").innerHTML = chipsHTML([["fotos","Fotos"],["lista","Lista"]], S.vistaVender, "data-vista");
+  $("#picks").classList.toggle("fotos", fotos);
+  if (fotos) {
+    $("#picks").innerHTML = list.length ? list.map(r => {
+      const enc = inCart.get(r.id) || 0, disp = r.stock - enc;
+      const tag = disp <= 0 ? `<span class="pc-tag pill crit">Sin stock</span>` : disp === 1 ? `<span class="pc-tag pill warn">Queda 1</span>` : "";
+      return `<button type="button" class="pcard${disp <= 0 ? " out" : ""}${enc ? " en" : ""}" data-add="${esc(r.id)}" aria-label="Agregar ${esc(r.nombre)} a la venta">
+        <span class="pc-foto">${r.img ? `<img src="${esc(r.img)}" alt="" loading="lazy">` : `<span class="ph" aria-hidden="true">${esc(iniciales(r.nombre))}</span>`}${tag}${enc ? `<span class="pc-badge">${enc} en la venta</span>` : ""}</span>
+        <span class="pc-info"><span class="nm">${esc(r.nombre)}</span>
+          <span class="pc-pie"><span class="pr">${ars(r.precio)}</span><span class="small muted num">${disp > 0 ? int(disp) + " disp." : ""}</span></span></span>
+      </button>`; }).join("")
+      : (S.productos.length ? `<div class="empty" style="grid-column:1/-1">No encontré productos con “${esc(S.venderQ)}”.</div>` : `<div class="empty" style="grid-column:1/-1">Cargando productos…</div>`);
+    return;
+  }
   $("#picks").innerHTML = list.length ? list.map(r => {
     const enc = inCart.get(r.id) || 0, disp = r.stock - enc;
     return `<button type="button" class="pick ${disp <= 0 ? "out" : ""}" data-add="${esc(r.id)}">
@@ -720,7 +752,7 @@ function renderCart(C){
     <div class="row between"><h2>Venta</h2>${S.cart.length ? `<button class="btn ghost small" type="button" id="cartClear">Vaciar</button>` : ""}</div>
     ${S.cart.length ? `<div>${S.cart.map((c,i) => `
       <div class="citem">
-        <span class="pname" style="overflow-wrap:anywhere">${esc(c.nombre)}</span>
+        <span class="row" style="gap:10px;flex-wrap:nowrap;min-width:0">${thumb((C.byId.get(c.pid) || {}).img, "sm")}<span class="pname" style="overflow-wrap:anywhere">${esc(c.nombre)}</span></span>
         <b class="num">${ars(c.precio*c.cant)}</b>
         <div class="ctrl">
           <span class="step"><button type="button" data-dec="${i}" aria-label="Restar uno">−</button><input type="number" min="1" step="1" value="${c.cant}" data-cant="${i}" id="cant-${esc(c.pid)}" aria-label="Cantidad"><button type="button" data-inc="${i}" aria-label="Sumar uno">+</button></span>
@@ -1028,6 +1060,7 @@ document.addEventListener("click", e => {
   if (t.dataset.per){ S.perResumen = t.dataset.per; remember("perResumen", S.perResumen); renderResumen(C); }
   else if (t.dataset.pvPer){ S.perVentas = t.dataset.pvPer; remember("perVentas", S.perVentas); renderVentas(); }
   else if (t.dataset.vcat){ S.venderCat = t.dataset.vcat; renderPicks(C); }
+  else if (t.dataset.vista){ S.vistaVender = t.dataset.vista; remember("vistaVender", S.vistaVender); renderPicks(C); }
   else if (t.dataset.scat){ S.stockCat = t.dataset.scat; renderStock(C); }
   else if (t.id === "soloBajo"){ S.soloBajo = !S.soloBajo; renderStock(C); }
   else if (t.dataset.add){ if (!S.canWrite) { toast("Modo lectura: no se pueden registrar ventas."); return; } addToCart(t.dataset.add, C); }
