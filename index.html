@@ -541,15 +541,25 @@ async function write(accion, extra, okMsg){
   catch(e){ manejarError(e, accion); return false; }
   finally { ocupado--; }
 }
+const aviso = html => { $("#globalNotice").innerHTML = html; };
 async function cargar(silencioso){
   if (ocupado) return;
+  const primeraVez = !S.loaded.p;
   if (!silencioso) setSync("busy","Cargando…");
-  try { aplicar(await api("estado")); setSync("ok","Conectado a la planilla"); $("#gate").hidden = true; }
-  catch(e){ if (!silencioso || e.error === "clave") manejarError(e, "estado"); }
+  if (primeraVez && L.clave) aviso(`<div class="notice">Cargando tus datos de la planilla… puede tardar unos segundos.</div>`);
+  try {
+    aplicar(await api("estado")); setSync("ok","Conectado a la planilla"); $("#gate").hidden = true;
+    if (primeraVez) aviso("");
+  } catch(e){
+    if (primeraVez && e.error !== "clave" && e.error !== "sin_clave")
+      aviso(`<div class="notice crit row between"><span>No pude traer los datos de la planilla. Revisá la conexión a internet.</span><button class="btn small" type="button" id="reintentar">Reintentar</button></div>`);
+    else if (primeraVez) aviso("");
+    if (!silencioso || e.error === "clave") manejarError(e, "estado");
+  }
 }
 
 /* ---------- acceso con clave ---------- */
-L.iniciarGate((data, creada) => { aplicar(data); setSync("ok","Conectado a la planilla"); toast(creada ? "Clave creada" : "Listo"); });
+L.iniciarGate((data, creada) => { aplicar(data); aviso(""); setSync("ok","Conectado a la planilla"); toast(creada ? "Clave creada" : "Listo"); });
 function applyRO(){
   document.body.classList.toggle("ro", !S.canWrite);
   if (!S.canWrite) $("#globalNotice").innerHTML = `<div class="notice">Estás viendo el panel en modo lectura: podés mirar todo, pero no registrar ventas ni cambiar precios.</div>`;
@@ -1052,6 +1062,7 @@ document.addEventListener("click", e => {
   else if (t.id === "fotoQuitar"){ elegirFoto("", ""); }
   else if (t.id === "fotoCerrar"){ cerrarFotos(); }
   else if (t.id === "apFotoBtn"){ abrirFotos(null); }
+  else if (t.id === "reintentar"){ cargar(false); }
   else if (t.dataset.cancel){ S.confirm = null; renderVentas(); renderGastos(); renderPedidos(C); }
 });
 $("#fotoModal").addEventListener("click", e => { if (e.target.id === "fotoModal") cerrarFotos(); });
