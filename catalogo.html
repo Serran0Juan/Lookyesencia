@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex,nofollow">
 <link rel="icon" type="image/png" href="img/icono.png">
 <link rel="apple-touch-icon" href="img/icono.png">
-<title>Catálogo Look y Estilo</title>
+<title>Catálogo Look y Esencia</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700&family=Figtree:wght@400;500;600;700&display=swap">
@@ -127,7 +127,7 @@ main{padding-block:16px 64px;display:flex;flex-direction:column;gap:14px}
 <body>
 <div class="gate" id="gate" hidden>
   <form id="gateForm" autocomplete="on">
-    <div><img class="logo-gate" src="img/logo.png" alt="Look y Esencia" width="110" height="110"><h1>Look y Estilo</h1><p id="gateText">Ingresá la clave del panel.</p></div>
+    <div><img class="logo-gate" src="img/logo.png" alt="Look y Esencia" width="110" height="110"><h1>Look y Esencia</h1><p id="gateText">Ingresá la clave del panel.</p></div>
     <label>Clave<input type="password" id="gateClave" autocomplete="current-password" required minlength="6"></label>
     <label id="gateRepWrap" hidden>Repetí la clave<input type="password" id="gateRep" autocomplete="new-password"></label>
     <div class="err" id="gateErr" role="alert"></div>
@@ -138,7 +138,7 @@ main{padding-block:16px 64px;display:flex;flex-direction:column;gap:14px}
 <header class="top">
   <div class="wrap">
     <div class="brand">
-      <div class="brand-row"><img class="logo" src="img/logo.png" alt="Look y Esencia" width="48" height="48"><h1>Look y Estilo</h1></div>
+      <div class="brand-row"><img class="logo" src="img/logo.png" alt="Look y Esencia" width="48" height="48"><h1>Look y Esencia</h1></div>
       <p>Catálogo · lo que tengo y a cuánto lo vendo</p>
     </div>
     <div class="row">
@@ -275,7 +275,7 @@ const cerrar = () => { $("#modal").hidden = true; };
 function listaTexto(){
   const list = visibles().filter(r => r.stock > 0);
   const cats = categorias(list);
-  const partes = ["*Look y Estilo* · lista de precios"];
+  const partes = ["*Look y Esencia* · lista de precios"];
   for (const c of cats){
     const items = list.filter(r => r.categoria === c).sort((a, b) => a.nombre.localeCompare(b.nombre, "es"));
     if (!items.length) continue;

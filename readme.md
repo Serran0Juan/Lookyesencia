@@ -1,4 +1,4 @@
-# Panel Look y Estilo
+# Panel Look y Esencia
 
 Herramienta interna para administrar el emprendimiento de perfumes. Es un sitio estático que se
 publica en Vercel y guarda todo en la planilla de Google "Control de stock y margenes", a través
